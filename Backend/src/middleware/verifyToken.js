@@ -1,29 +1,20 @@
-import UserModel from "../models/User.model.js";
-import admin from 'firebase-admin';
-import { getAuth } from 'firebase-admin/auth';
+import jwt from 'jsonwebtoken';
 
+export const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-
-if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(), // or use service account
-    });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
   }
-  
-  export const verifyToken = async (req, res, next) => {
-    const token = req.headers.authorization?.split('Bearer ')[1];
-    if (!token) return res.status(401).json({ message: 'No token provided' });
-  
-    try {
-      const decodedToken = await getAuth().verifyIdToken(token);
-      req.user = decodedToken;
-  
-      // Optional: Fetch role from MongoDB
-      const user = await UserModel.findOne({ uid: decodedToken.uid });
-      req.user.role = user?.role || 'user';
-  
-      next();
-    } catch (err) {
-      return res.status(403).json({ message: 'Invalid or expired token' });
-    }
-  };
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET);
+    req.user = decoded;
+    console.log('Decoded token:', decoded); 
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};

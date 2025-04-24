@@ -9,8 +9,9 @@ const PORT = process.env.PORT || 3002;
 
 async function main() {
     try {
+       
         await mongoose.connect(process.env.MONGODB_URL, {
-           
+          
         });
         console.log("✅ Connected to database");
 
@@ -24,3 +25,4 @@ async function main() {
 }
 
 main();
+

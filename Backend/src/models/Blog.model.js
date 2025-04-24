@@ -7,11 +7,23 @@ const blogSchema=new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
+
+    tags: {
+      type: [String],
+      default: []
+    },
+
     status: {
       type: String,
       enum: ['published', 'pending', 'rejected'],
       default: 'published'
     },
+    // In Blog model
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }],
+
     createdAt: {
       type: Date,
       default: Date.now
