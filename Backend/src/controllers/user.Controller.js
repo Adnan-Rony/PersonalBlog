@@ -107,10 +107,12 @@ export const loginUser = async (req, res) => {
   try {
       
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'User not found' });
+    if (!user)
+       return res.status(401).json({ message: 'User not found' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!isMatch) 
+      return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = generateToken(user);
     console.log("✅ Logged in user:", user.email);

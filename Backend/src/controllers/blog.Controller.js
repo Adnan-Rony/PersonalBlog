@@ -2,7 +2,8 @@ import BlogModel from "../models/Blog.model.js";
 import UserModel from "../models/User.model.js";
 
 export const createBlog = async (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, categories, tags } = req.body;
+
 
   try {
     // 🧑‍💼 Find the user by MongoDB _id (from JWT)
@@ -17,6 +18,8 @@ export const createBlog = async (req, res) => {
       title,
       content,
       author: user._id,
+      categories,
+      tags,
     });
 
     await blog.save();
@@ -49,6 +52,46 @@ export const getAllBlogs = async (req, res) => {
     });
   }
 };
+
+
+export const getBlogsByCategory = async (req, res) => {
+  const { category } = req.params;
+
+  if (!category || category.trim() === "") {
+    return res.status(400).json({ message: "Category is required" });
+  }
+
+  try {
+    const blogs = await BlogModel.find({ categories: category });
+
+    if (!blogs.length) {
+      return res.status(404).json({ message: "No blogs found for this category" });
+    }
+
+    res.status(200).json(blogs);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching blogs", error: err.message });
+  }
+};
+
+export const getBlogsByTag = async (req, res) => {
+  const { tag } = req.params;
+  if (!tag || tag.trim() === "") {
+    return res.status(400).json({ message: "Tag is required" });
+  }
+
+
+  try {
+    const blogs = await BlogModel.find({ tags: tag });
+
+    if (!blogs.length) {
+      return res.status(404).json({ message: "No blogs found for this tag" });
+    }
+    res.status(200).json(blogs);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching blogs', error: err.message });
+  }
+}
   
 export const deleteBlog = async (req, res) => {
   const { id } = req.params;
@@ -106,5 +149,37 @@ export const updateBlogStatus = async (req, res) => {
     res.status(200).json({ message: 'Blog status updated', blog });
   } catch (error) {
     res.status(500).json({ message: 'Error updating status', error: error.message });
+  }
+};
+
+
+
+// Search blog posts by title or content
+export const searchBlogs = async (req, res) => {
+  const { query } = req.query; // Get the search query from query params
+
+  try {
+    // Check if query exists
+    if (!query) {
+      return res.status(400).json({ message: 'Please provide a search query' });
+    }
+
+    // Use regular expression to perform case-insensitive search on title and content
+    const blogs = await BlogModel.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } }, // Search by title (case-insensitive)
+        { content: { $regex: query, $options: 'i' } } // Search by content (case-insensitive)
+      ]
+    });
+
+    // Return the search results
+    if (blogs.length > 0) {
+      return res.status(200).json({ message: 'Blogs found', blogs });
+    } else {
+      return res.status(404).json({ message: 'No blogs found' });
+    }
+    
+  } catch (err) {
+    res.status(500).json({ message: 'Search failed', error: err.message });
   }
 };

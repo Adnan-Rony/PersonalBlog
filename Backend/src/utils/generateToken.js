@@ -8,6 +8,6 @@ export const generateToken = (user) => {
       role: user.role,  // Ensure role is included in the token
     },
     process.env.SECRET,
-    { expiresIn: '1d' } // Set an expiration time for the token
+    { expiresIn: '5d' } // Set an expiration time for the token
   );
 };

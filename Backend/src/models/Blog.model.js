@@ -7,7 +7,7 @@ const blogSchema=new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
-
+    categories: [{ type: String }], 
     tags: {
       type: [String],
       default: []
