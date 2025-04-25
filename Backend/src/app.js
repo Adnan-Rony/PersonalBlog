@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 import indexRoutes from './router/index.routes.js'
 import blogRoutes from './router/blogRoutes.js'
 import userRoutes from './router/userRoutes.js'
-import serviceAccount from './config/serviceAccountKey.json' assert { type: 'json' };
+
 import AdminRoute from './router/AdminRoute.js'
 
 dotenv.config()
@@ -17,12 +17,6 @@ app.use(cors())
 app.use(cookieParser())
 
 
-// ✅ Firebase Admin SDK Init (ONLY if not already initialized)
-if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-  }
 
 
 app.use("/api/v1",indexRoutes); //base route for all api routes
