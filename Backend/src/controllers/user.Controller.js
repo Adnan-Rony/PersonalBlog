@@ -56,10 +56,9 @@
 
 
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import UserModel from '../models/User.model.js';
-import { generateToken } from './../utils/generateToken.js';
 import { validatePassword } from '../utils/validatePassword.js';
+import { generateToken } from './../utils/generateToken.js';
 
 
 
@@ -175,5 +174,28 @@ export const makeAdmin = async (req, res) => {
   }
 };
 
+// ✏️ Update user profile
+export const updateUserProfile = async (req, res) => {
+  const { username, email, bio, profilePicture } = req.body;
 
+  try {
+    const user = await UserModel.findById(req.user.id); // JWT will give req.user.id
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update only provided fields
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (bio) user.bio = bio;
+    if (profilePicture) user.profilePicture = profilePicture;
+
+    await user.save();
+
+    res.status(200).json({ message: "Profile updated successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: "Error updating profile", error: err.message });
+  }
+};
 

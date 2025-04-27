@@ -7,6 +7,10 @@ const blogSchema=new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
+    image: {
+      type: String, // will store image path
+      default: '',
+    },
     categories: [{ type: String }], 
     tags: {
       type: [String],

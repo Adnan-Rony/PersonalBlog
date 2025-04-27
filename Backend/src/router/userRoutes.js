@@ -1,7 +1,7 @@
 // routes/userRoutes.js
 import express from 'express';
 import { verifyToken } from './../middleware/verifyToken.js';
-import { loginUser, registerUser,makeAdmin, getAllUsers  } from '../controllers/user.Controller.js';
+import { loginUser, registerUser,makeAdmin, getAllUsers, updateUserProfile  } from '../controllers/user.Controller.js';
 import { checkAdmin } from './../middleware/checkAdmin.js';
 
 
@@ -22,6 +22,11 @@ router.get('/',verifyToken,checkAdmin, getAllUsers)
 
 
 router.put('/make-admin/:id', verifyToken, makeAdmin);
+
+
+//user profile route
+
+router.put("/profile", verifyToken, updateUserProfile);
 
 
 

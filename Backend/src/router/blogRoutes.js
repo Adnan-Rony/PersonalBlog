@@ -4,11 +4,12 @@ import { createBlog, deleteBlog, getAllBlogs, getBlogsByCategory, getBlogsByTag,
 import { verifyToken } from './../middleware/verifyToken.js';
 import { addComment } from '../controllers/comment.Controller.js';
 import { likeBlog } from '../controllers/likeblock.controller.js';
+import upload from '../middleware/upload.js';
 
 
 const router = express.Router();
 
-router.post("/create",verifyToken, createBlog)
+router.post("/create",verifyToken,upload.single('image') ,createBlog)
 
 router.get("/",getAllBlogs)
 

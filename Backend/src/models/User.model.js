@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  // its optional user profile fields
+  bio: {
+    type: String,
+    default: '',
+  },
+  profilePicture: {
+    type: String,
+    default: '',
+  },
 
   createdAt: {
     type: Date,
