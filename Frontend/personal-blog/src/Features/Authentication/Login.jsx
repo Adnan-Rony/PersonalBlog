@@ -1,11 +1,15 @@
 import React, { useState } from "react";
+import axios from "./../../../node_modules/axios/lib/axios";
+import { USER_API_END_POINT } from "../../utils/Constant.js";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [input, setInput] = useState({
     email: "",
     password: "",
   });
-
+  const navigate = useNavigate();
   // Handle input changes
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -13,21 +17,42 @@ const Login = () => {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Input:", input);
-
+  
     // Validate fields before submitting
     if (!input.email || !input.password) {
-      console.error("Please fill in all fields."); 
-      // You can replace this with a toast or UI error message
+      toast.error("Please fill in all fields.");
+      return;
     }
+  
+    try {
+      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+  
+      console.log("Response Data:", res.data); // Debugging
+  
+      if (res.status === 200 && res.data.success) {
+        toast.success("Login successful!");
+        navigate("/"); // Redirect to home or dashboard page
+      } else {
+        // If success: false or something went wrong
+        toast.success(res.data.message || "Invalid email or password.");
+      }
+  
+    } catch (err) {
+        console.error("Error:", err.response?.data || err.message);
+        toast.error( "Login failed");
+      }
   };
+  
 
   return (
     <div className="w-full max-w-xs mx-auto mt-10">
       <form onSubmit={handlesubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Username
+            Email
           </label>
           <input
             type="email"

@@ -1,24 +1,29 @@
-import express from 'express'
-import admin from 'firebase-admin';
-import dotenv from 'dotenv'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-import indexRoutes from './router/index.routes.js'
-import blogRoutes from './router/blogRoutes.js'
-import userRoutes from './router/userRoutes.js'
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import blogRoutes from './router/blogRoutes.js';
+import indexRoutes from './router/index.routes.js';
+import userRoutes from './router/userRoutes.js';
 
-import AdminRoute from './router/AdminRoute.js'
+import AdminRoute from './router/AdminRoute.js';
 
 dotenv.config()
 const app =express()
 
 app.use(express.json())
-app.use(cors())
+
 app.use(cookieParser())
 
+// CORS options
+const corsOptions = {
+    origin: "http://localhost:5173", // frontend URL
+    credentials: true, // allow credentials (cookies, tokens)
+  };
 
+  app.use(cors(corsOptions))
 
-
+  
 app.use("/api/v1",indexRoutes); //base route for all api routes
 
 
