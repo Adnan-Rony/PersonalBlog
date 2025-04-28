@@ -1,8 +1,8 @@
 // routes/userRoutes.js
 import express from 'express';
-import { verifyToken } from './../middleware/verifyToken.js';
-import { loginUser, registerUser,makeAdmin, getAllUsers, updateUserProfile  } from '../controllers/user.Controller.js';
+import { getAllUsers, getCurrentUser, loginUser, makeAdmin, registerUser, updateUserProfile } from '../controllers/user.Controller.js';
 import { checkAdmin } from './../middleware/checkAdmin.js';
+import { verifyToken } from './../middleware/verifyToken.js';
 
 
 
@@ -19,6 +19,9 @@ router.post('/login', loginUser);
 router.get('/',verifyToken,checkAdmin, getAllUsers)
 
 
+
+router.get('/me',verifyToken, getCurrentUser)
+router.get('/logout',verifyToken, getCurrentUser)
 
 
 router.put('/make-admin/:id', verifyToken, makeAdmin);

@@ -14,8 +14,9 @@ const userSchema = new mongoose.Schema({
 
   password: {
     type: String,
-    required: true // only needed if you're handling login with email/password
+    required: false // only needed if you're handling login with email/password
   },
+  
 
   role: {
     type: String,

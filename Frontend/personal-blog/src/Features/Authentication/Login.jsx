@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import axios from "./../../../node_modules/axios/lib/axios";
 import { USER_API_END_POINT } from "../../utils/Constant.js";
 import toast from "react-hot-toast";
+import { FaGoogle, FaFacebook, FaLinkedin } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import GoogleSignIn from "./GoogleSignIn.jsx";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -29,15 +31,17 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-  
+
       console.log("Response Data:", res.data); // Debugging
   
       if (res.status === 200 && res.data.success) {
+
+        
         toast.success("Login successful!");
         navigate("/"); // Redirect to home or dashboard page
       } else {
         // If success: false or something went wrong
-        toast.success(res.data.message || "Invalid email or password.");
+        toast.error(res.data.message || "Invalid email or password.");
       }
   
     } catch (err) {
@@ -86,7 +90,32 @@ const Login = () => {
             Login
           </button>
         </div>
+
+
+
+
+            
+
+
+
+
+
+
+
       </form>
+      {/* Social Login Buttons */}
+      <div className="flex justify-center space-x-4">
+              {/* <button className="p-3 shadow-2xl rounded-lg hover:bg-gray-100 transition-all">
+                <FaGoogle className="text-red-500" size={20} />
+              </button> */}
+              <GoogleSignIn></GoogleSignIn>
+              <button className="p-3 shadow-2xl rounded-lg hover:bg-gray-100 transition-all">
+                <FaFacebook className="text-blue-600" size={20} />
+              </button>
+              <button className="p-3 shadow-2xl rounded-lg hover:bg-gray-100 transition-all">
+                <FaLinkedin className="text-blue-700" size={20} />
+              </button>
+            </div>
     </div>
   );
 };

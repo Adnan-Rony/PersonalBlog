@@ -69,66 +69,90 @@ export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    // Validate password
-    const passwordError = validatePassword
-    (password);
-    if (passwordError) {
-      return res.status(400).json({ message: passwordError });
-    }
     const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'User already exists' });
+    }
 
-    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+    let user;
+    if (password) {
+      const passwordError = validatePassword(password); // Ensure this function exists
+      if (passwordError) {
+        return res.status(400).json({ success: false, message: passwordError });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = await UserModel.create({ name, email, password: hashedPassword });
+    } else {
+      user = await UserModel.create({ name, email, password: 'google-oauth' });
+    }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const token = generateToken(user);
 
-    const user = await UserModel.create({ name, email, password: hashedPassword });
+    // Set token in a cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
+    });
 
-    res.status(201).json({
-      message: 'User registered',
+    return res.status(201).json({
+      success: true,
+      message: password ? 'User registered with email/password' : 'User registered successfully (Google Sign-In)',
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
-    
   } catch (err) {
-    res.status(500).json({ message: 'Registration failed', error: err.message });
+    res.status(500).json({ success: false, message: 'Registration failed', error: err.message });
   }
 };
 
+
 // Login User
+ // Adjust path as needed
+
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-      
     const user = await UserModel.findOne({ email });
     if (!user)
-       return res.status(401).json({ message: 'User not found' });
+      return res.status(401).json({ success: false, message: 'User not found' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) 
-      return res.status(401).json({ message: 'Invalid credentials' });
+    if (!isMatch)
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const token = generateToken(user);
+
+    // Set token in a cookie
+    res.cookie('token', token, {
+      httpOnly: true, // Prevent JavaScript access
+      secure: process.env.NODE_ENV === 'production', // HTTPS in production
+      sameSite: 'strict', // CSRF protection
+      maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days, matching expiresIn: '5d'
+    });
+
     console.log("✅ Logged in user:", user.email);
     res.status(200).json({
+      success: true, // Added for frontend compatibility
       message: 'Login successful',
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
       },
       token
     });
-    
   } catch (err) {
-    res.status(500).json({ message: 'Login failed', error: err.message });
+    res.status(500).json({ success: false, message: 'Login failed', error: err.message });
   }
 };
 
@@ -143,6 +167,41 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.id).select('-password'); // Exclude password
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to fetch user', error: err.message });
+  }
+};
+
+
+export const logoutUser = (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0), // Set expiry in past
+    sameSite: 'Lax',
+    secure: process.env.NODE_ENV === 'production',
+  });
+
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
+};
+
+
 
 // Promote to Admin
 export const makeAdmin = async (req, res) => {
