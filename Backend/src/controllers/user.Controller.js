@@ -235,7 +235,7 @@ export const makeAdmin = async (req, res) => {
 
 // ✏️ Update user profile
 export const updateUserProfile = async (req, res) => {
-  const { username, email, bio, profilePicture } = req.body;
+  const {name, email, bio, profilePicture } = req.body;
 
   try {
     const user = await UserModel.findById(req.user.id); // JWT will give req.user.id
@@ -245,7 +245,7 @@ export const updateUserProfile = async (req, res) => {
     }
 
     // Update only provided fields
-    if (username) user.username = username;
+    if (name) user.name = name;
     if (email) user.email = email;
     if (bio) user.bio = bio;
     if (profilePicture) user.profilePicture = profilePicture;
