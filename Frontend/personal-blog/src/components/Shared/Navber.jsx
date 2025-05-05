@@ -1,74 +1,106 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { USER_API_END_POINT } from "../../utils/Constant.js";
-import { Link, NavLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import { Authcontext } from "../../context/AuthProvider.jsx";
+import { USER_API_END_POINT } from "../../utils/Constant.js";
 
 const Navber = () => {
   const { Firebaseuser, Firebaselogout } = useContext(Authcontext);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch manual login user from backend
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`${USER_API_END_POINT}/me`, {
-          withCredentials: true, // Send cookie
+          withCredentials: true,
         });
 
         if (response.data.success) {
           setUser(response.data.user);
         } else {
-          setUser(null); // No user or invalid token
+          setUser(null);
         }
       } catch (error) {
-        console.error("Error fetching user:", error.response?.data || error.message);
-        setUser(null); // Clear user on error (e.g., invalid/expired token)
+        console.error(
+          "Error fetching user:",
+          error.response?.data || error.message
+        );
+        setUser(null);
       }
     };
 
     fetchUser();
   }, []);
 
+  // Logout Handler
   const logoutHandler = async () => {
     try {
-      await axios.get(`${USER_API_END_POINT}/logout`, {
-        withCredentials: true,
-      });
-      setUser(null); // Clear user from state
+      if (Firebaseuser) {
+        await Firebaselogout(); // Firebase logout
+      } else {
+        await axios.get(`${USER_API_END_POINT}/logout`, {
+          withCredentials: true,
+        });
+      }
+      setUser(null); // Clear manual login user
       navigate("/login"); // Redirect to login page
       toast.success("Logged out successfully!");
     } catch (error) {
-      console.error("Error logging out:", error.response?.data || error.message);
+      console.error(
+        "Error logging out:",
+        error.response?.data || error.message
+      );
+      toast.error("Logout failed");
     }
   };
 
+  // Combine both users into one variable
+  const currentUser = user || Firebaseuser;
+
   return (
     <div>
-      <div className="navbar bg-base-100 shadow-sm">
-        <div className="flex-1">
-          <a className="btn btn-ghost text-xl">daisyUI</a>
-        </div>
-        <div className="flex gap-2">
+      <div className="navbar bg-base-100  max-w-screen-xl mx-auto">
+        <div className="flex-1 space-x-2">
+          <Link to="/" className="btn btn-ghost text-xl">
+            BlogSite
+          </Link>
           <input
             type="text"
             placeholder="Search"
-            className="input input-bordered w-24 md:w-auto"
+            className="input lg:w-2/6 w-28 border-none bg-gray-100"
           />
-          <small className="flex justify-center items-center">
-            {Firebaseuser?.displayName || Firebaseuser?.email}
-            {user ? user.name : ""}
-          </small>
+          <Link to="/blog">Write</Link>
+          <Link to="/allblogs">AllBlogs</Link>
+        </div>
 
-          {/* Displaying Avatar if logged in (either via Firebase or Manual Login) */}
-          {user || Firebaseuser ? (
+        <div className="flex gap-2 items-center">
+          {/* Show user name if logged in */}
+          {currentUser && (
+            <small className="font-semibold">
+              {currentUser.displayName || currentUser.name || currentUser.email}
+            </small>
+          )}
+
+          {/* If logged in */}
+          {currentUser ? (
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
                 <div className="w-10 rounded-full">
                   <img
                     alt="Profile"
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    src={
+                      currentUser?.photoURL
+                        ? currentUser.photoURL
+                        : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    }
+                    className="object-cover"
                   />
                 </div>
               </div>
@@ -79,33 +111,26 @@ const Navber = () => {
                 <li>
                   <Link to="/profile" className="justify-between">
                     Profile
-                   
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
+                  <Link to="/settings">Settings</Link>
                 </li>
                 <li>
-                  <a>
-                    <button onClick={logoutHandler}>Logout</button>
-                  </a>
+                  <button onClick={logoutHandler} className="text-left w-full">
+                    Logout
+                  </button>
                 </li>
               </ul>
             </div>
           ) : (
-            <button className="bg-black text-white px-4 py-2 rounded">
-              <NavLink to="/login">Login</NavLink>
-            </button>
-          )}
-
-          {/* Firebase Logout Button */}
-          {Firebaseuser && (
-            <button
-              onClick={Firebaselogout}
-              className="bg-black text-white px-4 py-2 rounded"
+            // If not logged in
+            <Link
+              to="/login"
+              className="bg-black  text-white px-4 py-2 rounded"
             >
-              Logout
-            </button>
+              Get Started
+            </Link>
           )}
         </div>
       </div>

@@ -4,8 +4,13 @@ import Login from "../Features/Authentication/Login.jsx";
 import SignIn from "../Features/Authentication/SignIn.jsx";
 import DashboardLayout from "../layout/DashboardLayout.jsx";
 import Mainlayout from "../layout/Mainlayout.jsx";
-import AdminDashboard from "../pages/Dashboard.jsx";
+import AdminDashboard from "../pages/AdminDashboard.jsx";
 import Home from "../pages/Home.jsx";
+
+import RichTextEditor from "./../components/blog/Blog";
+import AllBlogs from './../components/blog/AllBlogs';
+import SingleBlog from "../components/blog/SingleBlog.jsx";
+import ExploreTags from "../components/blog/ExploreTags.jsx";
 
 export const AppRouter = createBrowserRouter([
   {
@@ -27,6 +32,22 @@ export const AppRouter = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile></Profile>,
+      },
+      {
+        path: "/blog",
+        element: <RichTextEditor></RichTextEditor>,
+      },
+      {
+        path: "/allblogs",
+        element: <AllBlogs></AllBlogs>,
+      },
+      {
+        path:"/blogs/:id",
+        element: <SingleBlog></SingleBlog>,
+      },
+      {
+        path:"/alltags",
+        element: <ExploreTags></ExploreTags>,
       },
     ],
   },

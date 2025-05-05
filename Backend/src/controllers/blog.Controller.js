@@ -4,7 +4,7 @@ import UserModel from "../models/User.model.js";
 export const createBlog = async (req, res) => {
   const { title, content, categories, tags } = req.body;
   const image = req.file ? req.file.filename : null;
-
+      
   try {
     // 🧑‍💼 Find the user by MongoDB _id (from JWT)
     const user = await UserModel.findById(req.user.id); // assumes token contains { id: user._id }
@@ -55,6 +55,23 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
+export const getBlogById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const blog = await BlogModel.findById(id).populate('author', 'name email');
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    res.status(200).json(blog);
+  } catch (error) {
+    console.error('Error fetching blog:', error);
+    res.status(500).json({ message: 'Error fetching blog', error: error.message });
+  }
+}
+
 
 export const getBlogsByCategory = async (req, res) => {
   const { category } = req.params;
@@ -94,6 +111,25 @@ export const getBlogsByTag = async (req, res) => {
     res.status(500).json({ message: 'Error fetching blogs', error: err.message });
   }
 }
+
+export const getBlogAllTags = async (req, res) => {
+  try {
+    const blogs = await BlogModel.find().select('tags');
+
+    const allTagsSet = new Set();
+    blogs.forEach(blog => {
+      blog.tags?.forEach(tag => allTagsSet.add(tag));
+    });
+
+    const uniqueTags = Array.from(allTagsSet);
+    res.status(200).json(uniqueTags);
+    
+  } catch (error) {
+    console.error('Error fetching tags:', error.message);
+    res.status(500).json({ message: 'Error fetching tags', error: error.message });
+  }
+};
+
   
 export const deleteBlog = async (req, res) => {
   const { id } = req.params;

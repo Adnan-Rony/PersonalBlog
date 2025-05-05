@@ -80,6 +80,7 @@ export const registerUser = async (req, res) => {
       if (passwordError) {
         return res.status(400).json({ success: false, message: passwordError });
       }
+      
       const hashedPassword = await bcrypt.hash(password, 10);
       user = await UserModel.create({ name, email, password: hashedPassword });
     } else {

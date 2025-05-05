@@ -1,46 +1,38 @@
-
 import express from 'express';
-import { createBlog, deleteBlog, getAllBlogs, getBlogsByCategory, getBlogsByTag, searchBlogs, updateBlogStatus } from '../controllers/blog.Controller.js';
+import {
+  createBlog,
+  deleteBlog,
+  getAllBlogs,
+  getBlogAllTags,
+  getBlogById,
+  getBlogsByCategory,
+  getBlogsByTag,
+  searchBlogs,
+  updateBlogStatus
+} from '../controllers/blog.Controller.js';
 import { verifyToken } from './../middleware/verifyToken.js';
 import { addComment } from '../controllers/comment.Controller.js';
 import { likeBlog } from '../controllers/likeblock.controller.js';
-import upload from '../middleware/upload.js';
-
 
 const router = express.Router();
 
-router.post("/create",verifyToken,upload.single('image') ,createBlog)
-
-router.get("/",getAllBlogs)
-
-// Get blogs by category (optional)
-router.get("/category/:category", getBlogsByCategory);
-
-
-// Get blogs by tag (optional)
+// ✅ STATIC ROUTES FIRST
+router.get("/tags", getBlogAllTags);
 router.get("/tag/:tag", getBlogsByTag);
+router.get("/category/:category", getBlogsByCategory);
+router.get("/search", searchBlogs);
 
+// ✅ CRUD & AUTH ROUTES
+router.post("/create", verifyToken, createBlog);
+router.delete("/:id", verifyToken, deleteBlog);
+router.put("/status/:id", verifyToken, updateBlogStatus);
+router.put("/:blogId/like", verifyToken, likeBlog);
 
+// ✅ COMMENT ROUTES
+router.post('/comments/:blogId', verifyToken, addComment);
 
-
-// ❌ Delete a blog (only author or admin)
-router.delete("/:id",verifyToken,deleteBlog)
-
-
-// Update blog status (author or admin only)
-router.put("/status/:id", verifyToken,updateBlogStatus);
-
-
-//comment routes
-
-router.post('/comments/:blogId/', verifyToken, addComment);
-
-// routes/blogRoutes.js
-router.put('/:blogId/like', verifyToken, likeBlog);
-
-
-// Search Blog Posts Route
-router.get('/search', searchBlogs);
-
+// ✅ MAIN FETCH ROUTES
+router.get("/", getAllBlogs);
+router.get("/:id", getBlogById); // ❗Keep this LAST to avoid route collision
 
 export default router;

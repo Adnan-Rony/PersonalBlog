@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FaGoogle, FaFacebook, FaLinkedin } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import GoogleSignIn from "./GoogleSignIn.jsx";
+import axiosInstance from "../../api/axiosInstance.js";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -27,10 +28,7 @@ const Login = () => {
     }
   
     try {
-      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
+      const res = await axiosInstance.post(`${USER_API_END_POINT}/login`, input) 
 
       console.log("Response Data:", res.data); // Debugging
   

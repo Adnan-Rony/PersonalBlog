@@ -2,15 +2,12 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Navber from "../components/Shared/Navber.jsx";
 
-
-
 const Mainlayout = () => {
   return (
     <div>
       <Navber></Navber>
 
-      <main className="w-full max-w-screen-xl mx-auto">
-       
+      <main className="max-w-screen-xl mx-auto">
         <Outlet />
       </main>
     </div>

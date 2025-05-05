@@ -38,5 +38,21 @@ export const adminDashboard = async (req, res) => {
       res.status(500).json({ message: 'Error getting overview', error: err.message });
     }
   };
+
+
+  export const deleteBlog = async (req, res) => {
+    try {
+      const blogId = req.params.id;
+      const deletedBlog = await BlogModel.findByIdAndDelete(blogId);
+  
+      if (!deletedBlog) {
+        return res.status(404).json({ message: 'Blog not found' });
+      }
+  
+      res.status(200).json({ message: 'Blog deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting blog', error: error.message });
+    }
+  };
   
   
