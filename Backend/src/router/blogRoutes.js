@@ -5,6 +5,7 @@ import {
   getAllBlogs,
   getBlogAllTags,
   getBlogById,
+  getBlogsAllCategories,
   getBlogsByCategory,
   getBlogsByTag,
   searchBlogs,
@@ -18,9 +19,11 @@ const router = express.Router();
 
 // ✅ STATIC ROUTES FIRST
 router.get("/tags", getBlogAllTags);
+router.get("/category", getBlogsAllCategories);
 router.get("/tag/:tag", getBlogsByTag);
 router.get("/category/:category", getBlogsByCategory);
 router.get("/search", searchBlogs);
+
 
 // ✅ CRUD & AUTH ROUTES
 router.post("/create", verifyToken, createBlog);

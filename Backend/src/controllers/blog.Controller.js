@@ -93,6 +93,22 @@ export const getBlogsByCategory = async (req, res) => {
   }
 };
 
+export const getBlogsAllCategories = async (req, res) => {
+  try{
+    const blogs=await BlogModel.find().select('categories');
+    const allCategoriesSet=new Set();
+    blogs.forEach(blog=>{
+      blog.categories?.forEach(category=>allCategoriesSet.add(category))
+      
+    })
+    const uniqueCategories=Array.from(allCategoriesSet);
+    res.status(200).json(uniqueCategories);
+  } catch (error) {
+    console.error('Error fetching categories:', error.message);
+    res.status(500).json({ message: 'Error fetching categories', error: error.message });
+  }
+}
+
 export const getBlogsByTag = async (req, res) => {
   const { tag } = req.params;
   if (!tag || tag.trim() === "") {
@@ -194,30 +210,24 @@ export const updateBlogStatus = async (req, res) => {
 
 // Search blog posts by title or content
 export const searchBlogs = async (req, res) => {
-  const { query } = req.query; // Get the search query from query params
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ message: 'Query parameter is required' });
+  }
 
   try {
-    // Check if query exists
-    if (!query) {
-      return res.status(400).json({ message: 'Please provide a search query' });
-    }
-
-    // Use regular expression to perform case-insensitive search on title and content
+    // Search for blogs with matching title or content
     const blogs = await BlogModel.find({
       $or: [
-        { title: { $regex: query, $options: 'i' } }, // Search by title (case-insensitive)
-        { content: { $regex: query, $options: 'i' } } // Search by content (case-insensitive)
-      ]
+        { title: { $regex: query, $options: 'i' } },
+        { content: { $regex: query, $options: 'i' } },
+      ],
     });
 
-    // Return the search results
-    if (blogs.length > 0) {
-      return res.status(200).json({ message: 'Blogs found', blogs });
-    } else {
-      return res.status(404).json({ message: 'No blogs found' });
-    }
-    
-  } catch (err) {
-    res.status(500).json({ message: 'Search failed', error: err.message });
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-};
+}
