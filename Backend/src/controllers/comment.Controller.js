@@ -16,6 +16,12 @@ export const addComment = async (req, res) => {
       });
   
       await comment.save();
+  // Push comment to blog
+  blog.comments.push(comment._id);
+  await blog.save();
+
+
+
       res.status(201).json({ message: 'Comment added', comment });
     } catch (error) {
       res.status(500).json({ message: 'Error adding comment', error: error.message });

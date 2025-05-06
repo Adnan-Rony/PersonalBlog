@@ -41,7 +41,15 @@ export const createBlog = async (req, res) => {
 export const getAllBlogs = async (req, res) => {
   try {
     const blogs = await BlogModel.find()
-      .populate('author', 'name email') // shows author name & email only
+    .populate('author', 'name email') // populate author with name and email
+    .populate({
+      path: 'comments',
+      select: 'content author createdAt' ,
+      populate: {
+        path: 'author',
+        select: 'name' // only include the comment author's name
+      }
+    }) 
       .sort({ createdAt: -1 });         // newest blogs first (optional)
 
     res.status(200).json(blogs);
@@ -59,7 +67,17 @@ export const getBlogById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const blog = await BlogModel.findById(id).populate('author', 'name email');
+    const blog = await BlogModel.findById(id)
+    .populate('author', 'name email')
+    .populate({
+      path: 'comments',
+      select: 'content author createdAt' ,
+      populate: {
+        path: 'author',
+        select: 'name' // only include the comment author's name
+      }
+    }) 
+    
 
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });

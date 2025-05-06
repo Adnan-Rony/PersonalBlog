@@ -7,10 +7,11 @@ import Mainlayout from "../layout/Mainlayout.jsx";
 import AdminDashboard from "../pages/AdminDashboard.jsx";
 import Home from "../pages/Home.jsx";
 
+import AllBlogs from "../pages/AllBlogs.jsx";
 import RichTextEditor from "./../components/blog/Blog";
-import AllBlogs from './../components/blog/AllBlogs';
-import SingleBlog from "../components/blog/SingleBlog.jsx";
+
 import ExploreTags from "../components/blog/ExploreTags.jsx";
+import SingleBlog from "./../pages/SingleBlog";
 
 export const AppRouter = createBrowserRouter([
   {
@@ -37,16 +38,17 @@ export const AppRouter = createBrowserRouter([
         path: "/blog",
         element: <RichTextEditor></RichTextEditor>,
       },
+    
       {
-        path: "/allblogs",
-        element: <AllBlogs></AllBlogs>,
-      },
-      {
-        path:"/blogs/:id",
+        path: "/blogs/:id",
         element: <SingleBlog></SingleBlog>,
       },
+      // {
+      //   path:"/blogs/:id",
+      //   element: <SingleBlog></SingleBlog>,
+      // },
       {
-        path:"/alltags",
+        path: "/alltags",
         element: <ExploreTags></ExploreTags>,
       },
     ],
