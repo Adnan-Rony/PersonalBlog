@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
-import img from "../assets/download.png"
+import img from "../assets/download.png";
 import axiosInstance from "../api/axiosInstance.js";
-
+import RecommendedTags from "../components/blog/RecommendedTags.jsx";
 
 const AllBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
-  const allTags = [...new Set(blogs.flatMap((blog) => blog.tags))];
 
   const allCategories = [...new Set(blogs.flatMap((blog) => blog.categories))];
 
@@ -63,7 +62,7 @@ const AllBlogs = () => {
                 )}
               </button>
             )}
-          </div>{" "}
+          </div>
           <hr className="text-gray-300 " />
           {blogs.map((blog, index) => (
             <Link key={index} to={`/blogs/${blog._id}`}>
@@ -73,17 +72,14 @@ const AllBlogs = () => {
                     {blog.title}
                   </h2>
 
-                  <div
-                    className="text-gray-600"
-                   
-                  >
-                    {blog.content.replace(/<[^>]+>/g, '').slice(0, 100)}...
+                  <div className="text-gray-600">
+                    {blog.content.replace(/<[^>]+>/g, "").slice(0, 100)}...
                   </div>
 
-                  <div className="text-sm text-gray-500 mt-2 flex items-center gap-4">
+                  <div className="text-sm  text-gray-500 mt-2 flex items-center gap-4">
                     <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-                    <span>👁️ 359</span>
-                    <span>💬 10</span>
+                    {/* <span>👁️ </span> */}
+                    <span>💬 {blog.comments.length}</span>
                   </div>
                 </div>
 
@@ -111,23 +107,7 @@ const AllBlogs = () => {
               </li>
             </ul>
           </div>
-
-          <div className="bg-white rounded-lg space-y-2  shadow p-4">
-            <h3 className="text-lg font-semibold mb-4">Recommended Tags</h3>
-            <div className="grid grid-cols-2 gap-2 ">
-              {allTags.map((tag, index) => (
-                <button
-                  key={index}
-                  className="bg-gray-100 btn text-sm px-3 py-1 rounded-full text-gray-500"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-            <Link to="/alltags" className="text- text-gray-600 pl-4 ">
-              see more tags
-            </Link>
-          </div>
+          <RecommendedTags blogsProp={blogs}></RecommendedTags>
         </div>
       </div>
     </div>

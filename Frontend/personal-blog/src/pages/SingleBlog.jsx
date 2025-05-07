@@ -14,6 +14,7 @@ const SingleBlog = () => {
   const [loading, setLoading] = useState(true);
   const [inputData, setInputData] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [users, setusers] = useState([]);
 
   const fetchBlog = async () => {
     try {
@@ -48,13 +49,18 @@ const SingleBlog = () => {
     }
   };
 
-
-
-
-
-
-
-
+  const fetchUser = async () => {
+    try {
+      const res = await axiosInstance.get("/users/me");
+      setusers(res.data);
+    } catch (err) {
+      console.log("error fetching users", err);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   if (loading) return <p className="text-center mt-10">Loading blog...</p>;
   if (!blog) return <p className="text-center mt-10">Blog not found.</p>;
@@ -83,7 +89,7 @@ const SingleBlog = () => {
             className="rounded-full w-10 h-10"
           />
           <div>
-            <h1>{blog.author?.name || "Unknown Author"}</h1>
+            <h1>{users.user.name}</h1>
           </div>
         </div>
 
@@ -92,7 +98,7 @@ const SingleBlog = () => {
           onChange={(e) => setInputData(e.target.value)}
           onSubmit={handleSubmit}
           submitting={submitting}
-        ></CommentForm>
+        />
 
         <hr className="my-10 text-gray-200" />
 
@@ -100,7 +106,7 @@ const SingleBlog = () => {
           ?.slice()
           .reverse()
           .map((comment, index) => (
-            <CommentItem key={index} comment={comment}></CommentItem>
+            <CommentItem key={index} comment={comment} />
           ))}
       </div>
 
@@ -108,14 +114,7 @@ const SingleBlog = () => {
 
       <h1 className="text-3xl font-semibold py-4">Recommended from Medium</h1>
 
-      <RecommndedBlogs
-      currentBlogId={id}
-      key={id}
-      
-      ></RecommndedBlogs>
-
-
-      
+      <RecommndedBlogs currentBlogId={id} key={id} />
     </div>
   );
 };

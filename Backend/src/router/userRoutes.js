@@ -17,7 +17,7 @@ router.get('/',verifyToken,checkAdmin, getAllUsers)
 router.get('/me',verifyToken, getCurrentUser)
 router.get('/logout',verifyToken, logoutUser)
 router.put('/make-admin/:id', verifyToken, makeAdmin);
-router.put("/profile", verifyToken, updateUserProfile);
+router.put("/profile/:id", verifyToken, updateUserProfile);
 
 
 

@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import Profile from "../components/Profile/Profile.jsx";
+
 import Login from "../Features/Authentication/Login.jsx";
 import SignIn from "../Features/Authentication/SignIn.jsx";
 import DashboardLayout from "../layout/DashboardLayout.jsx";
@@ -12,6 +12,7 @@ import RichTextEditor from "./../components/blog/Blog";
 
 import ExploreTags from "../components/blog/ExploreTags.jsx";
 import SingleBlog from "./../pages/SingleBlog";
+import ProfileInfo from "../pages/ProfileInfo.jsx";
 
 export const AppRouter = createBrowserRouter([
   {
@@ -24,24 +25,21 @@ export const AppRouter = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login></Login>,
+        element: <Login/>
       },
       {
         path: "/SignIn",
-        element: <SignIn></SignIn>,
+        element: <SignIn/>
       },
-      {
-        path: "/profile",
-        element: <Profile></Profile>,
-      },
+     
       {
         path: "/blog",
-        element: <RichTextEditor></RichTextEditor>,
+        element: <RichTextEditor/>
       },
     
       {
         path: "/blogs/:id",
-        element: <SingleBlog></SingleBlog>,
+        element: <SingleBlog/>
       },
       // {
       //   path:"/blogs/:id",
@@ -49,17 +47,21 @@ export const AppRouter = createBrowserRouter([
       // },
       {
         path: "/alltags",
-        element: <ExploreTags></ExploreTags>,
+        element: <ExploreTags/>
+      },
+      {
+        path: "/profile",
+        element: <ProfileInfo/>
       },
     ],
   },
   {
     path: "/dashboard",
-    element: <DashboardLayout></DashboardLayout>,
+    element: <DashboardLayout/>,
     children: [
       {
         path: "/dashboard/admin",
-        element: <AdminDashboard></AdminDashboard>,
+        element: <AdminDashboard/>
       },
     ],
   },

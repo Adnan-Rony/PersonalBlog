@@ -63,6 +63,28 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
+
+export const getUserBlogs=async (req,res)=>{
+  try {
+    const userid=req.user.id;
+    const blogs=await BlogModel.find({author:userid}).populate("author","name email")
+    .populate({
+      path: 'comments',
+      select: 'content author createdAt' ,
+      populate: {
+        path: 'author',
+        select: 'name' // only include the comment author's name
+      }
+    })
+
+    res.status(200).json(blogs)
+  } catch(err){
+    res.status(500).json({message:"internal server down"})
+  }
+}
+
+
+
 export const getBlogById = async (req, res) => {
   const { id } = req.params;
 

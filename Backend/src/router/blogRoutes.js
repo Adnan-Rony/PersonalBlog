@@ -8,6 +8,7 @@ import {
   getBlogsAllCategories,
   getBlogsByCategory,
   getBlogsByTag,
+  getUserBlogs,
   searchBlogs,
   updateBlogStatus
 } from '../controllers/blog.Controller.js';
@@ -30,9 +31,11 @@ router.post("/create", verifyToken, createBlog);
 router.delete("/:id", verifyToken, deleteBlog);
 router.put("/status/:id", verifyToken, updateBlogStatus);
 router.put("/:blogId/like", verifyToken, likeBlog);
+router.get("/myblogs",verifyToken,getUserBlogs)
 
 // ✅ COMMENT ROUTES
 router.post('/comments/:blogId', verifyToken, addComment);
+
 
 // ✅ MAIN FETCH ROUTES
 router.get("/", getAllBlogs);
