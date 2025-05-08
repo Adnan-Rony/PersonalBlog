@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance.js";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../LoadingSpinner.jsx";
+import { getAllBlogs } from "../../api/blogApi.js";
 
 const RecommendedTags = ({ blogsProp }) => {
   const [blogs, setBlogs] = useState([]);
@@ -9,7 +11,7 @@ const RecommendedTags = ({ blogsProp }) => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axiosInstance.get("/blogs");
+        const response = await getAllBlogs()
         setBlogs(response.data);
         setLoading(false);
       } catch (error) {
@@ -20,7 +22,7 @@ const RecommendedTags = ({ blogsProp }) => {
 
     fetchBlogs();
   }, [blogsProp]);
-
+  if (loading) return <p>loading....</p>
   return (
     <div>
       <div className="bg-white rounded-lg space-y-2  shadow p-4">

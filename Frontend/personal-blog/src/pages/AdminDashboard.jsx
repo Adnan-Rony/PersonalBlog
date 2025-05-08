@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance.js';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import LoadingSpinner from '../components/LoadingSpinner.jsx';
 
 
 const AdminDashboard = () => {
@@ -68,7 +69,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-xl font-semibold"><span className="loading loading-ring loading-xl"></span></div>
+       <LoadingSpinner></LoadingSpinner>
       </div>
     );
   }

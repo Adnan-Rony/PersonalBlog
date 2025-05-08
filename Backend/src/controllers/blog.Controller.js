@@ -63,6 +63,46 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
+export const updateBlog = async (req, res) => {
+  const { id } = req.params;
+  const { title, content, categories, tags } = req.body;
+  const image = req.file ? req.file.filename : null;
+
+  try {
+    const blog = await BlogModel.findById(id);
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Check if the logged-in user is the author of the blog
+    if (blog.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized to update this blog" });
+    }
+
+    // Update blog fields if new values are provided
+    blog.title = title || blog.title;
+    blog.content = content || blog.content;
+    blog.categories = categories || blog.categories;
+    blog.tags = tags || blog.tags;
+    
+    if (image) {
+      blog.image = image;  // Update the image if provided
+    }
+
+    await blog.save();
+
+    res.status(200).json({
+      message: "Blog updated successfully",
+      blog
+    });
+
+  } catch (err) {
+    console.error('Error updating blog:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 export const getUserBlogs=async (req,res)=>{
   try {
@@ -82,6 +122,69 @@ export const getUserBlogs=async (req,res)=>{
     res.status(500).json({message:"internal server down"})
   }
 }
+
+export const getSingleBlog = async (req, res) => {
+  try {
+    const { id } = req.params;  // Get the blog ID from the URL params
+    const blog = await BlogModel.findById(id)
+      .populate("author", "name email")  // Populate author details
+      .populate({
+        path: 'comments',
+        select: 'content author createdAt',
+        populate: {
+          path: 'author',
+          select: 'name'  // Populate comment author's name
+        }
+      });
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    res.status(200).json(blog);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+};
+
+export const updateUserBlog = async (req, res) => {
+  const { id } = req.params;  // Get the blog ID from the URL parameters
+  const { title, content, categories, tags } = req.body;  // Extract new values from the request body
+  const image = req.file ? req.file.filename : null;  // Handle image file if present
+
+  try {
+    const blog = await BlogModel.findById(id);  // Find the blog by ID
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Check if the logged-in user is the author of the blog
+    if (blog.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized to update this blog" });
+    }
+
+    // Update the blog fields with the new values (if provided)
+    blog.title = title || blog.title;
+    blog.content = content || blog.content;
+    blog.categories = categories || blog.categories;
+    blog.tags = tags || blog.tags;
+    if (image) {
+      blog.image = image;  // Update the image if a new one is uploaded
+    }
+
+    await blog.save();  // Save the updated blog to the database
+
+    res.status(200).json({
+      message: "Blog updated successfully",
+      blog,
+    });
+  } catch (err) {
+    console.error("Error updating blog:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 
 

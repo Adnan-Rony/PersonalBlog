@@ -8,9 +8,12 @@ import {
   getBlogsAllCategories,
   getBlogsByCategory,
   getBlogsByTag,
+  getSingleBlog,
   getUserBlogs,
   searchBlogs,
-  updateBlogStatus
+  updateBlog,
+  updateBlogStatus,
+  updateUserBlog
 } from '../controllers/blog.Controller.js';
 import { verifyToken } from './../middleware/verifyToken.js';
 import { addComment } from '../controllers/comment.Controller.js';
@@ -32,6 +35,14 @@ router.delete("/:id", verifyToken, deleteBlog);
 router.put("/status/:id", verifyToken, updateBlogStatus);
 router.put("/:blogId/like", verifyToken, likeBlog);
 router.get("/myblogs",verifyToken,getUserBlogs)
+router.get("/myblogs/:id",verifyToken,getSingleBlog)
+
+
+
+router.put("/updateblogs/:id",verifyToken,updateUserBlog)
+
+
+router.put("/editblog/:id",verifyToken,updateBlog)
 
 // ✅ COMMENT ROUTES
 router.post('/comments/:blogId', verifyToken, addComment);

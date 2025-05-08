@@ -1,104 +1,69 @@
+// src/pages/ProfileInfo.jsx
 import React, { useEffect, useState } from "react";
-import { getMyBlogs, getuser } from "../api/blogApi.js";
-
-import { Link } from "react-router-dom";
-import { BsThreeDots } from "react-icons/bs";
+import { getMyBlogs, getLoginuser } from "../api/blogApi.js";
+import img from "../assets/user-profile-icon-free-vector.jpg";
 import LeftBlogsection from "../components/Profile/LeftBlogsection.jsx";
-import AboutProfile from "../components/blog/AboutProfile.jsx";
 import ProfileModel from '../components/blog/ProfileModel.jsx';
-
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
 const ProfileInfo = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setuser] = useState(null);
-
+  const [user, setUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
+  
   useEffect(() => {
-    const fetchmyBlogs = async () => {
+    const fetchData = async () => {
       try {
-        const [myblogresponse, userResponse] = await Promise.all([
+        const [myBlogResponse, userResponse] = await Promise.all([
           getMyBlogs(),
-          getuser(),
+          getLoginuser(),
         ]);
-
-        setBlogs(myblogresponse.data);
-        setuser(userResponse.data);
+        setBlogs(myBlogResponse.data);
+        setUser(userResponse.data);
       } catch (err) {
-        console.log("error fatching", err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchmyBlogs();
+
+    fetchData();
   }, []);
 
-  if (loading) return <p>Loading your blogs...</p>;
+  if (loading) return <LoadingSpinner></LoadingSpinner>
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 h-screen">
       {/* Left: Blog Section */}
-      <div className="md:col-span-2 space-y-8 ">
-        {/* Blog Post 1 */}
-
-        {/* name of each tab group should be unique */}
-        <div className="tabs tabs-lift">
-          <input
-            type="radio"
-            name="my_tabs_3"
-            className="tab"
-            aria-label="Home"
-          />
-          <div className="tab-content bg-base-100 border-base-300 p-6">
-            <LeftBlogsection props={blogs}></LeftBlogsection>
-          </div>
-
-          <input
-            type="radio"
-            name="my_tabs_3"
-            className="tab"
-            aria-label="about"
-            defaultChecked
-          />
-          <div className="tab-content bg-base-100 border-base-300 p-6">
-           <AboutProfile></AboutProfile>
-          </div>
-        </div>
+      <div className="md:col-span-2 space-y-8">
+        <LeftBlogsection blogs={blogs} />
       </div>
 
       {/* Right: Profile Sidebar */}
-      <div className="md:col-span-1 ">
+      <div className="md:col-span-1">
         {user && (
           <div>
             <img
-              src="https://source.unsplash.com/80x80/?person"
+              src={user.user.profilepicture || img}
               alt="Profile"
-              className="w-20 h-20 rounded-full mx-auto"
+              className="w-10 h-10 rounded-full "
             />
             <h3 className="mt-4 text-xl font-semibold">{user.user.name}</h3>
-            <p className="text-gray-500 text-sm">6 followers</p>
+            <p className="text-gray-500 text-sm">{user.user.email}</p>
             <p className="text-gray-600 text-sm mt-2 leading-relaxed">
-              Junior Web developer | NextJs | React | JavaScript | Node Js |
-              MongoDB | Express Js | Tailwind CSS
+              {user.user.bio}
             </p>
-
-
-            <button onClick={openModal}
-              
+            <button
+              onClick={openModal}
               className="text-green-600 font-medium text-sm mt-3 inline-block"
             >
               Edit profile
             </button>
             {isModalOpen && <ProfileModel closeModal={closeModal} />}
-
-
-
-
-
           </div>
         )}
       </div>

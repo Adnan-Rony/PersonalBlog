@@ -3,12 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import img from "../assets/user-profile-icon-free-vector.jpg";
 
-import axiosInstance from "../api/axiosInstance.js";
+
 import CommentForm from "../components/blog/CommentForm.jsx";
 import CommentItem from "../components/blog/CommentItem.jsx";
 
 import RecommndedBlogs from "../components/blog/RecommndedBlogs.jsx";
+import { getBlogById, getLoginuser, postcomment } from "../api/blogApi.js";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
+
 const SingleBlog = () => {
+
+
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +23,7 @@ const SingleBlog = () => {
 
   const fetchBlog = async () => {
     try {
-      const response = await axiosInstance.get(`/blogs/${id}`);
+      const response = await getBlogById(id)
       setBlog(response.data);
       setLoading(false);
     } catch (error) {
@@ -34,24 +39,22 @@ const SingleBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!inputData.trim()) return;
-
+  
     try {
       setSubmitting(true);
-      await axiosInstance.post(`/blogs/comments/${id}`, {
-        content: inputData,
-      });
+      await postcomment(id, inputData); // ✅ uses axiosInstance inside
       setInputData("");
-      await fetchBlog();
+      await fetchBlog(); // refresh blog with new comment
     } catch (error) {
       console.error("Error adding comment:", error);
     } finally {
       setSubmitting(false);
     }
   };
-
+ 
   const fetchUser = async () => {
     try {
-      const res = await axiosInstance.get("/users/me");
+      const res = await getLoginuser()
       setusers(res.data);
     } catch (err) {
       console.log("error fetching users", err);
@@ -62,7 +65,7 @@ const SingleBlog = () => {
     fetchUser();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading blog...</p>;
+  if (loading) return <LoadingSpinner></LoadingSpinner>
   if (!blog) return <p className="text-center mt-10">Blog not found.</p>;
 
   return (

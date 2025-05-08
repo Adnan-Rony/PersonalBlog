@@ -1,8 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
-// import HeroImage from "../assets/hero-image.png"; // <- adjust the path to your image
 
-const HeroSection = () => {
+const HeroSection = ({ onGetStarted }) => {
   return (
     <div className="h-screen flex items-center justify-between px-20 bg-[#f9f6f1]">
       {/* Left side */}
@@ -15,17 +13,13 @@ const HeroSection = () => {
           A place to read, write, and deepen your understanding
         </p>
 
-        <Link to="/login">
-          <button className="px-6 py-3 bg-black text-white rounded-full text-lg hover:bg-gray-800 transition">
-            Start reading
-          </button>
-        </Link>
+        <button
+          onClick={onGetStarted}
+          className="px-6 py-3 bg-black text-white rounded-full text-lg hover:bg-gray-800 transition"
+        >
+          Start reading
+        </button>
       </div>
-
-      
-      {/* <div className="hidden md:flex">
-        <img src={HeroImage} alt="Hero" className="w-[500px]" />
-      </div> */}
     </div>
   );
 };

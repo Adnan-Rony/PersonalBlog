@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
 import img from "../assets/download.png";
-import axiosInstance from "../api/axiosInstance.js";
+
 import RecommendedTags from "../components/blog/RecommendedTags.jsx";
+import { getAllBlogs } from "../api/blogApi.js";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
 const AllBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -25,7 +27,7 @@ const AllBlogs = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axiosInstance.get("/blogs");
+        const response = await getAllBlogs();
         setBlogs(response.data);
         setLoading(false);
       } catch (error) {
@@ -37,12 +39,13 @@ const AllBlogs = () => {
     fetchBlogs();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading blogs...</p>;
+  if (loading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 px-4 py-6 space-y-2">
         <div className="lg:col-span-8 space-y-5  ">
+          {/* categories */}
           <div className="flex items-center gap-2 flex-wrap overflow-x-auto">
             {visibleCategories.map((cat, index) => (
               <span
@@ -63,11 +66,13 @@ const AllBlogs = () => {
               </button>
             )}
           </div>
+
+          
           <hr className="text-gray-300 " />
           {blogs.map((blog, index) => (
             <Link key={index} to={`/blogs/${blog._id}`}>
-              <div className="bg-white rounded-lg shadow p-4 flex justify-between flex-col md:flex-row gap-4 space-y-2 my-2">
-                <div className="">
+              <div className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row gap-4 space-y-2 my-2">
+                <div className="flex-1">
                   <h2 className="text-xl font-bold text-gray-900">
                     {blog.title}
                   </h2>
@@ -76,18 +81,17 @@ const AllBlogs = () => {
                     {blog.content.replace(/<[^>]+>/g, "").slice(0, 100)}...
                   </div>
 
-                  <div className="text-sm  text-gray-500 mt-2 flex items-center gap-4">
+                  <div className="text-sm text-gray-500 mt-2 flex items-center gap-4">
                     <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-                    {/* <span>👁️ </span> */}
                     <span>💬 {blog.comments.length}</span>
                   </div>
                 </div>
 
-                <div>
+                <div className="flex-shrink-0">
                   <img
                     src={img}
                     alt="thumbnail"
-                    className="w-52   h-32 object-cover rounded "
+                    className="w-full h-32 object-cover rounded md:w-52 md:h-32"
                   />
                 </div>
               </div>

@@ -7,7 +7,8 @@ import Quill from "quill";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
-import axiosInstance from './../../api/axiosInstance';
+import axiosInstance from '../api/axiosInstance.js';
+import { createBlog } from "../api/blogApi.js";
 
 Quill.register("modules/imageUploader", ImageUploader);
 
@@ -60,13 +61,15 @@ const BlogEditor = () => {
   const handleFinalPost = async (e) => {
     e.preventDefault();
 
+    const blogData={
+      title,
+      content,
+      categories: category,
+      tags: tags.split(",").map((tag) => tag.trim()),
+    }
+
     try {
-      const response = await axiosInstance.post("/blogs/create", {
-        title,
-        content,
-        categories: category,
-        tags: tags.split(",").map((tag) => tag.trim()),
-      });
+      const response = await createBlog(blogData)
 
       if (response.status === 201 || response.status === 200) {
         toast.success("Blog posted successfully!");
@@ -117,7 +120,7 @@ const BlogEditor = () => {
       {/* Modal */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
+          className="fixed inset-0   bg-opacity-30 flex items-center justify-center z-50"
           role="dialog"
           aria-modal="true"
           onKeyDown={(e) => e.key === "Escape" && setShowModal(false)}

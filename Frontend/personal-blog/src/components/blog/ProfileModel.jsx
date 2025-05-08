@@ -1,12 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 
-const ProfileModel = ({ closeModal }) => {
+import { userprofileupdate } from "../../api/blogApi.js";
+import { toast } from 'react-hot-toast';
+
+const ProfileModel = ({ closeModal,userId, initialData}) =>{
 
 
-    
-    
+    const [name, setName] = useState("Adnanory");
+    const [email, setEmail] = useState("");
+    const [bio, setBio] = useState("");
+    const [profilePicture, setProfilePicture] = useState(""); // Optio
 
-
+    const handleSubmit = async () => {
+        const updatedData = { name, email, bio,profilePicture };
+        try {
+          const response = await userprofileupdate(userId, updatedData);
+          toast.success(response.data.message || "Profile updated");
+          closeModal();
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to update profile");
+        }
+      };
 
 
 
@@ -51,6 +66,8 @@ const ProfileModel = ({ closeModal }) => {
                 Name *
               </label>
               <input
+              value={name}
+              onChange={(e)=>setName(e.target.value)}
                 type="text"
                 defaultValue="Adnanory"
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none "
@@ -63,6 +80,8 @@ const ProfileModel = ({ closeModal }) => {
                 email
               </label>
               <input
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
                 type="email"
                 placeholder="Add..."
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none "
@@ -75,6 +94,8 @@ const ProfileModel = ({ closeModal }) => {
                 Short bio
               </label>
               <textarea
+              value={bio}
+              onChange={(e)=>setBio(e.target.value)}
                 defaultValue=""
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none "
                 rows="3"
@@ -90,7 +111,7 @@ const ProfileModel = ({ closeModal }) => {
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
+            <button onClick={handleSubmit} className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
               Save
             </button>
           </div>

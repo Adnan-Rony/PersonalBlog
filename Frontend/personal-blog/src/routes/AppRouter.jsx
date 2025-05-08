@@ -7,12 +7,15 @@ import Mainlayout from "../layout/Mainlayout.jsx";
 import AdminDashboard from "../pages/AdminDashboard.jsx";
 import Home from "../pages/Home.jsx";
 
-import AllBlogs from "../pages/AllBlogs.jsx";
-import RichTextEditor from "./../components/blog/Blog";
+
+
 
 import ExploreTags from "../components/blog/ExploreTags.jsx";
 import SingleBlog from "./../pages/SingleBlog";
 import ProfileInfo from "../pages/ProfileInfo.jsx";
+
+import BlogEditorUpdate from "../pages/BlogEditorUpdate.jsx";
+import BlogEditor from "../pages/BlogEditor.jsx";
 
 export const AppRouter = createBrowserRouter([
   {
@@ -34,17 +37,14 @@ export const AppRouter = createBrowserRouter([
      
       {
         path: "/blog",
-        element: <RichTextEditor/>
+        element: <BlogEditor></BlogEditor>
       },
     
       {
         path: "/blogs/:id",
         element: <SingleBlog/>
       },
-      // {
-      //   path:"/blogs/:id",
-      //   element: <SingleBlog></SingleBlog>,
-      // },
+
       {
         path: "/alltags",
         element: <ExploreTags/>
@@ -52,6 +52,10 @@ export const AppRouter = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfileInfo/>
+      },
+      {
+        path: "/blogs/update/:blogId",
+        element: <BlogEditorUpdate></BlogEditorUpdate>
       },
     ],
   },
