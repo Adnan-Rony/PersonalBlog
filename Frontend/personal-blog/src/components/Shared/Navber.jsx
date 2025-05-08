@@ -7,6 +7,7 @@ import { USER_API_END_POINT } from "../../utils/Constant.js";
 import axiosInstance from "../../api/axiosInstance.js";
 import { Search } from "lucide-react";
 import img from "../../assets/user-profile-icon-free-vector.jpg";
+import { LiaEdit } from "react-icons/lia";
 
 const Navber = () => {
   const { Firebaseuser, Firebaselogout } = useContext(Authcontext);
@@ -47,7 +48,7 @@ const Navber = () => {
       navigate("/login");
       toast.success("Logged out successfully!");
     } catch (error) {
-      toast.error("Logout failed");
+      toast.error("Logout failed", error);
     }
   };
 
@@ -94,38 +95,40 @@ const Navber = () => {
           {/* Desktop Search */}
 
           <div className="hidden md:block relative w-48 sm:w-64">
-  <input
-    type="text"
-    value={query}
-    onChange={(e) => setQuery(e.target.value)}
-    onFocus={() => query.length > 0 && setShowDropdown(true)}
-    onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-    placeholder="    Search blogs..."
-    className="input  w-full px-4 py-2 pr-10 rounded" // pr-10 for icon space
-  />
-  <Search className="absolute left-2  top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
-  {showDropdown && suggestions.length > 0 && (
-    <ul className="absolute left-0 right-0 mt-1 bg-white  rounded shadow z-50">
-      {suggestions.map((blog) => (
-        <li
-          key={blog._id}
-          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-          onClick={() => handleSelect(blog._id)}
-        >
-          {blog.title}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => query.length > 0 && setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+              placeholder="    Search blogs..."
+              className="input  w-full px-4 py-2 pr-10 rounded" // pr-10 for icon space
+            />
+            <Search className="absolute left-2  top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+            {showDropdown && suggestions.length > 0 && (
+              <ul className="absolute left-0 right-0 mt-1 bg-white  rounded shadow z-50">
+                {suggestions.map((blog) => (
+                  <li
+                    key={blog._id}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleSelect(blog._id)}
+                  >
+                    {blog.title}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Right Side */}
         <div className="flex items-center gap-3">
           {/* Desktop Write Button */}
           <Link to="/blog" className="hidden md:inline-block">
-            Write
+          <div className="flex gap-1">
+          <LiaEdit className="text-2xl flex items-center" />
+          Write
+          </div>
           </Link>
 
           {/* Mobile Search Icon */}

@@ -3,11 +3,12 @@ import { Authcontext } from "../../context/AuthProvider.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { USER_API_END_POINT } from "../../utils/Constant.js";
-import { FaGoogle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 const GoogleSignIn = () => {
   const navigate = useNavigate();
-  const { Firebaseuser, Firebaselogout, googleSignIn } = useContext(Authcontext);
+  const { Firebaseuser, Firebaselogout, googleSignIn } =
+    useContext(Authcontext);
 
   const handleGoogleSignin = () => {
     googleSignIn().then((result) => {
@@ -35,15 +36,17 @@ const GoogleSignIn = () => {
         });
     });
   };
-    
+
   return (
-    <div>
-      <button
-        onClick={handleGoogleSignin}
-        className="p-3 shadow-2xl rounded-lg hover:bg-gray-100 transition-all"
-      >
-        <FaGoogle className="text-red-500" size={20} />
-      </button>
+    <div className=" w-full  ">
+<button
+  onClick={handleGoogleSignin}
+  className="p-2 w-full  flex items-center justify-center gap-2 rounded-2xl border  hover:bg-gray-300 transition-all"
+>
+  <FcGoogle  size={20} />
+  Login with Google
+</button>
+
     </div>
   );
 };

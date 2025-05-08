@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { getMyBlogs, getLoginuser } from "../api/blogApi.js";
 import img from "../assets/user-profile-icon-free-vector.jpg";
 import LeftBlogsection from "../components/Profile/LeftBlogsection.jsx";
-import ProfileModel from '../components/blog/ProfileModel.jsx';
+import ProfileModel from "../components/blog/ProfileModel.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
+import { Link } from "react-router-dom";
 
 const ProfileInfo = () => {
   const [blogs, setBlogs] = useState([]);
@@ -14,7 +15,7 @@ const ProfileInfo = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,13 +35,13 @@ const ProfileInfo = () => {
     fetchData();
   }, []);
 
-  if (loading) return <LoadingSpinner></LoadingSpinner>
+  if (loading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 h-screen">
       {/* Left: Blog Section */}
       <div className="md:col-span-2 space-y-8">
-        <LeftBlogsection blogs={blogs} />
+        <LeftBlogsection blogs={blogs} setBlogs={setBlogs} />
       </div>
 
       {/* Right: Profile Sidebar */}
@@ -57,12 +58,24 @@ const ProfileInfo = () => {
             <p className="text-gray-600 text-sm mt-2 leading-relaxed">
               {user.user.bio}
             </p>
-            <button
+           <div className="flex items-center gap-2">
+           <button
               onClick={openModal}
-              className="text-green-600 font-medium text-sm mt-3 inline-block"
+              className="text-green-600  font-medium text-sm mt-3 inline-block"
             >
               Edit profile
             </button>
+
+            {/* ✅ Admin-only button */}
+            {user.user.role === "admin" && (
+              <Link to="/dashboard/admin">
+                <button className="text-green-600 font-medium text-sm mt-3 inline-block">
+                  Dashboard
+                </button>
+              </Link>
+            )}
+           </div>
+
             {isModalOpen && <ProfileModel closeModal={closeModal} />}
           </div>
         )}

@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createBlog,
   deleteBlog,
+  deleteUserBlog,
   getAllBlogs,
   getBlogAllTags,
   getBlogById,
@@ -36,6 +37,7 @@ router.put("/status/:id", verifyToken, updateBlogStatus);
 router.put("/:blogId/like", verifyToken, likeBlog);
 router.get("/myblogs",verifyToken,getUserBlogs)
 router.get("/myblogs/:id",verifyToken,getSingleBlog)
+router.delete("/myblogs/:id",verifyToken,deleteUserBlog)
 
 
 

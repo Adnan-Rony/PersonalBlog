@@ -69,7 +69,7 @@ const ProfileModel = ({ closeModal,userId, initialData}) =>{
               value={name}
               onChange={(e)=>setName(e.target.value)}
                 type="text"
-                defaultValue="Adnanory"
+                placeholder="name.."
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none "
               />
               <p className="text-gray-500 text-sm mt-1">9/60</p>
@@ -100,7 +100,7 @@ const ProfileModel = ({ closeModal,userId, initialData}) =>{
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none "
                 rows="3"
               />
-              <p className="text-gray-500 text-sm mt-1">98/160</p>
+             
             </div>
           </div>
 
@@ -111,7 +111,7 @@ const ProfileModel = ({ closeModal,userId, initialData}) =>{
             >
               Cancel
             </button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
+            <button onClick={handleSubmit} className="px-4 py-2 bg-black text-white rounded-full hover:bg-green-600">
               Save
             </button>
           </div>

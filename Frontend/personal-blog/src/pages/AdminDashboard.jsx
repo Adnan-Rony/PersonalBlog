@@ -1,9 +1,10 @@
 // src/pages/AdminDashboard.jsx
 import { useEffect, useState } from 'react';
-import axiosInstance from '../api/axiosInstance.js';
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import { adminblogdatadelete, getdataAdminDashboard, getdataAdminDashboardOverview } from '../api/blogApi.js';
 
 
 const AdminDashboard = () => {
@@ -15,8 +16,8 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const [blogsRes, overviewRes] = await Promise.all([
-        axiosInstance.get('/admin/dashboard'),
-        axiosInstance.get('/admin/dashboard/overview')
+        getdataAdminDashboard(),
+        getdataAdminDashboardOverview()
       ]);
 
       setBlogs(blogsRes.data);
@@ -48,19 +49,30 @@ const AdminDashboard = () => {
 
 
 
-  const handleDeleteBlog = async (blogId) => {
 
-    if (confirm('Are you sure you want to delete this blog?')) {
-      try {
-        await axiosInstance.delete(`/admin/blogs/${blogId}`);
-        toast.success('Blog deleted successfully!');
-        fetchDashboardData(); // refresh blogs list
-      } catch (error) {
-        console.error('Error deleting blog:', error);
-        toast.error('Failed to delete blog.');
+
+  const handleDeleteBlog = async (blogId) => {
+    Swal.fire({
+      title: "Do you want to delete this blog?",
+      showDenyButton: true,
+      
+      confirmButtonText: "Yes",
+      denyButtonText: "No"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await adminblogdatadelete(blogId); // Delete the blog
+          Swal.fire('Blog Deleted!', '', 'success'); // Success message
+          fetchDashboardData(); // Refresh blogs list
+        } catch (error) {
+          console.error('Error deleting blog:', error);
+          Swal.fire('Failed to delete blog', '', 'error'); // Error message
+        }
+      
       }
-    }
+    });
   };
+  
 
   useEffect(() => {
     fetchDashboardData();

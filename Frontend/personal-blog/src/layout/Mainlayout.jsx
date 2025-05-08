@@ -7,7 +7,7 @@ const Mainlayout = () => {
     <div>
       <Navber></Navber>
 
-      <main className="max-w-screen-xl mx-auto">
+      <main className="max-w-screen mx-auto">
         <Outlet />
       </main>
     </div>

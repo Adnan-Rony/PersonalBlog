@@ -123,6 +123,33 @@ export const getUserBlogs=async (req,res)=>{
   }
 }
 
+export const deleteUserBlog = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const blogId = req.params.id;
+
+    // Find the blog first
+    const blog = await BlogModel.findById(blogId);
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    // Check if the logged-in user is the author
+    if (blog.author.toString() !== userId) {
+      return res.status(403).json({ message: 'Unauthorized: Not your blog' });
+    }
+
+    // Delete the blog
+    await BlogModel.findByIdAndDelete(blogId);
+
+    res.status(200).json({ message: 'Blog deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 export const getSingleBlog = async (req, res) => {
   try {
     const { id } = req.params;  // Get the blog ID from the URL params

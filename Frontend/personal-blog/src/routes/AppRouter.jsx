@@ -58,7 +58,10 @@ export const AppRouter = createBrowserRouter([
         element: <BlogEditorUpdate></BlogEditorUpdate>
       },
     ],
+   
   },
+
+ 
   {
     path: "/dashboard",
     element: <DashboardLayout/>,

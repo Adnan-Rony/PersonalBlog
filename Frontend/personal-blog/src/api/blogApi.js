@@ -18,7 +18,7 @@ export const postcomment=(blogId, content)=>axiosInstance.post(`/blogs/comments/
 
 export const editblog = (id, updatedata) => axiosInstance.put(`/blogs/updateblogs/${id}`, updatedata);
 
-
+export const myblogdelete=(blogId)=>axiosInstance.delete(`/blogs/myblogs/${blogId}`)
 
 
 
@@ -29,5 +29,12 @@ export const getLoginuser=()=>axiosInstance.get("/users/me")
 
 export const userprofileupdate=(id,updatedData)=>axiosInstance.put(`users/profile/${id}`,updatedData)
 
+//admin dashboard
 
+export const getdataAdminDashboard=()=>axiosInstance.get("/admin/dashboard")
+export const getdataAdminDashboardOverview=()=>axiosInstance.get("/admin/dashboard/overview")
+
+export const adminblogdatadelete=(blogId)=>axiosInstance.delete(`/admin/blogs/${blogId}`)
+
+export const makeadmin=(id,updatedata)=>axiosInstance.put(`/users/makeadmin/${id}`,updatedata)
 
