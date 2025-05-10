@@ -53,6 +53,10 @@ const ExploreTags = () => {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
+       <Seo
+            title="DevThought | All Tags  "
+            description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+          />
       <div className="flex flex-wrap gap-2 justify-center mb-6">
         {tags.slice(0,10).map((tag, index) => (
           <span

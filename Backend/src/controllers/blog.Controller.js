@@ -2,8 +2,8 @@ import BlogModel from "../models/Blog.model.js";
 import UserModel from "../models/User.model.js";
 
 export const createBlog = async (req, res) => {
-  const { title, content, categories, tags } = req.body;
-  const image = req.file ? req.file.filename : null;
+  const { title, content, categories, tags,image } = req.body;
+  
       
   try {
     // 🧑‍💼 Find the user by MongoDB _id (from JWT)
@@ -20,8 +20,8 @@ export const createBlog = async (req, res) => {
       author: user._id,
       categories,
       tags,
-
-      image, // image path from multer
+image
+     
     });
 
     await blog.save();

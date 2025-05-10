@@ -1,27 +1,35 @@
 import React, { useState, useMemo } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import ImageUploader from "quill-image-uploader";
+
 import Quill from "quill";
+
+
 
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
-import axiosInstance from '../api/axiosInstance.js';
-import { createBlog } from "../api/blogApi.js";
 
-Quill.register("modules/imageUploader", ImageUploader);
+import { createBlog } from "../api/blogApi.js";
+import Seo from "../components/Seo.jsx";
+
+
 
 const BlogEditor = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setimage] = useState("");
   const [tags, setTags] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
 
 
+  const Font = Quill.import("formats/font");
+  Font.whitelist = ["sans-serif", "serif", "monospace"];
+  Quill.register(Font, true);
+  
   // Toolbar options for ReactQuill
   const toolbarOptions = [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -35,28 +43,14 @@ const BlogEditor = () => {
     ["link", "image"],
     [{ color: [] }, { background: [] }],
     [{ align: [] }],
-    ["clean"],
+    ["clean"]
   ];
-
-  // Memoize Quill modules to prevent re-creation
-  const quillModules = useMemo(
-    () => ({
-      toolbar: toolbarOptions,
-      imageUploader: {
-        upload: async (file) => {
-          const formData = new FormData();
-          formData.append("image", file);
-          const response = await axiosInstance.post("/uploads", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          return response.data.url;
-        },
-      },
-    }),
-    []
-  );
+  
+  const quillModules = useMemo(() => ({
+    toolbar: toolbarOptions,
+  }), []);
+  
+  
 
   const handleFinalPost = async (e) => {
     e.preventDefault();
@@ -65,6 +59,7 @@ const BlogEditor = () => {
       title,
       content,
       categories: category,
+      image,
       tags: tags.split(",").map((tag) => tag.trim()),
     }
 
@@ -77,6 +72,7 @@ const BlogEditor = () => {
         setContent("");
         setCategory("");
         setTags("");
+        setimage("");
         setShowModal(false);
         navigate("/");
       } else {
@@ -90,6 +86,10 @@ const BlogEditor = () => {
 
   return (
     <div className="my-4 space-y-3 p-4 relative z-10">
+       <Seo
+      title="DevThought | Write Blog "
+      description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+    />
       <input
         type="text"
         placeholder="Blog Title"
@@ -98,8 +98,9 @@ const BlogEditor = () => {
         onChange={(e) => setTitle(e.target.value)}
         required
       />
+     
 
-      <div className="quill-container">
+      <div className="quill-container overflow-visible z-10">
         <ReactQuill
           theme="snow"
           value={content}
@@ -133,6 +134,13 @@ const BlogEditor = () => {
               </button>
             </div>
 
+            <input
+              type="text"
+              placeholder="image URL"
+              value={image}
+              onChange={(e) => setimage(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
             <input
               type="text"
               placeholder="Category"

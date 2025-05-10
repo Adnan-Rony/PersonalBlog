@@ -179,7 +179,7 @@ export const makeAdmin = async (req, res) => {
     res.status(500).json({ message: 'Failed to update role', error: err.message });
   }
 };
-
+ 
 // ✏️ Update user profile
 export const updateUserProfile = async (req, res) => {
   const {name, email, bio, profilePicture } = req.body;

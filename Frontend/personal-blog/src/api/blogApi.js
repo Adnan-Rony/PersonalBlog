@@ -25,6 +25,8 @@ export const myblogdelete=(blogId)=>axiosInstance.delete(`/blogs/myblogs/${blogI
 
 
 //users api
+export const getAllUsers = () => axiosInstance.get('/users');
+
 export const getLoginuser=()=>axiosInstance.get("/users/me")
 
 export const userprofileupdate=(id,updatedData)=>axiosInstance.put(`users/profile/${id}`,updatedData)
@@ -36,5 +38,6 @@ export const getdataAdminDashboardOverview=()=>axiosInstance.get("/admin/dashboa
 
 export const adminblogdatadelete=(blogId)=>axiosInstance.delete(`/admin/blogs/${blogId}`)
 
-export const makeadmin=(id,updatedata)=>axiosInstance.put(`/users/makeadmin/${id}`,updatedata)
+export const makeadmin = (id) => axiosInstance.put(`/users/makeadmin/${id}`);
+
 

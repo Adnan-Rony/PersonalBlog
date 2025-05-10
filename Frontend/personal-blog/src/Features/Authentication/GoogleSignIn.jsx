@@ -12,7 +12,7 @@ const GoogleSignIn = () => {
 
   const handleGoogleSignin = () => {
     googleSignIn().then((result) => {
-      console.log(result.user);
+    
 
       const userInfo = {
         name: result.user?.displayName,
@@ -26,6 +26,7 @@ const GoogleSignIn = () => {
         .post(`${USER_API_END_POINT}/register`, userInfo)
         .then((response) => {
           console.log(response.data);
+        
           navigate("/");
         })
         .catch((error) => {

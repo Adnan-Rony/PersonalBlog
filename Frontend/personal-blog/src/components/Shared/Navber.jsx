@@ -32,8 +32,11 @@ const Navber = () => {
         setUser(null);
       }
     };
+
     fetchUser();
-  }, []);
+
+    // Refresh user when Firebaseuser updates
+  }, [Firebaseuser]);
 
   const logoutHandler = async () => {
     try {
@@ -74,7 +77,6 @@ const Navber = () => {
     setShowDropdown(false);
   };
 
-  // Close mobile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -86,14 +88,14 @@ const Navber = () => {
   }, []);
 
   return (
-    <div className="bg-base-100 w-full px-4 py-2 sticky top-0 z-50">
-      <div className=" mx-auto  flex justify-between items-center">
+    <div className="bg-base-100 w-full px-4 py-2 sticky top-0 z-50 shadow">
+      <div className="mx-auto flex justify-between items-center">
         <div className="flex gap-2 items-center">
-          <Link to="/" className="text-xl  font-semibold whitespace-nowrap">
+          <Link to="/" className="text-xl font-semibold whitespace-nowrap">
             DevThoughts
           </Link>
-          {/* Desktop Search */}
 
+          {/* Desktop Search */}
           <div className="hidden md:block relative w-48 sm:w-64">
             <input
               type="text"
@@ -102,11 +104,11 @@ const Navber = () => {
               onFocus={() => query.length > 0 && setShowDropdown(true)}
               onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
               placeholder="    Search blogs..."
-              className="input  w-full px-4 py-2 pr-10 rounded" // pr-10 for icon space
+              className="input w-full px-4 py-2 pr-10 rounded"
             />
-            <Search className="absolute left-2  top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
             {showDropdown && suggestions.length > 0 && (
-              <ul className="absolute left-0 right-0 mt-1 bg-white  rounded shadow z-50">
+              <ul className="absolute left-0 right-0 mt-1 bg-white rounded shadow z-50">
                 {suggestions.map((blog) => (
                   <li
                     key={blog._id}
@@ -125,10 +127,10 @@ const Navber = () => {
         <div className="flex items-center gap-3">
           {/* Desktop Write Button */}
           <Link to="/blog" className="hidden md:inline-block">
-          <div className="flex gap-1">
-          <LiaEdit className="text-2xl flex items-center" />
-          Write
-          </div>
+            <div className="flex gap-1">
+              <LiaEdit className="text-2xl flex items-center" />
+              Write
+            </div>
           </Link>
 
           {/* Mobile Search Icon */}
@@ -143,7 +145,9 @@ const Navber = () => {
           {currentUser ? (
             <div className="relative" ref={profileRef}>
               <img
-                src={currentUser?.photoURL || img}
+                src={
+                  user?.profilePicture || Firebaseuser?.photoURL || img
+                }
                 onClick={() => setMobileDropdown((prev) => !prev)}
                 alt="Profile"
                 className="lg:w-10 lg:h-10 w-6 h-6 rounded-full object-cover cursor-pointer"

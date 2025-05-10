@@ -6,6 +6,7 @@ import img from "../assets/download.png";
 import RecommendedTags from "../components/blog/RecommendedTags.jsx";
 import { getAllBlogs } from "../api/blogApi.js";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
+import Seo from "../components/Seo.jsx";
 
 const AllBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -43,6 +44,11 @@ const AllBlogs = () => {
 
   return (
     <div className="">
+   <Seo
+      title="DevThought | Home page  "
+      description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+    />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 px-4 py-6 space-y-2">
         <div className="lg:col-span-8 space-y-5  ">
           {/* categories */}
@@ -88,11 +94,21 @@ const AllBlogs = () => {
                 </div>
 
                 <div className="flex-shrink-0">
-                  <img
-                    src={img}
-                    alt="thumbnail"
-                    className="w-full h-32 object-cover rounded md:w-52 md:h-32"
-                  />
+                  {
+                    blog.image ? (
+                      <img
+                        src={blog.image}
+                        alt={blog.title}
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <img
+                        src={img}
+                        alt="default"
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    )
+                  }
                 </div>
               </div>
             </Link>

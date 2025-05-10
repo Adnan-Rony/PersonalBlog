@@ -6,6 +6,7 @@ import LeftBlogsection from "../components/Profile/LeftBlogsection.jsx";
 import ProfileModel from "../components/blog/ProfileModel.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { Link } from "react-router-dom";
+import Seo from "../components/Seo.jsx";
 
 const ProfileInfo = () => {
   const [blogs, setBlogs] = useState([]);
@@ -39,6 +40,13 @@ const ProfileInfo = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 h-screen">
+       <Seo
+      title="DevThought | Profile  "
+      description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+    />
+      
+      
+      
       {/* Left: Blog Section */}
       <div className="md:col-span-2 space-y-8">
         <LeftBlogsection blogs={blogs} setBlogs={setBlogs} />
@@ -49,7 +57,7 @@ const ProfileInfo = () => {
         {user && (
           <div>
             <img
-              src={user.user.profilepicture || img}
+              src={user.user.profilePicture || img}
               alt="Profile"
               className="w-10 h-10 rounded-full "
             />

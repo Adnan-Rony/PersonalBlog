@@ -5,6 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import toast from "react-hot-toast";
 
 import { editblog, getMyBlogsbyid } from "../api/blogApi.js";
+import Seo from "../components/Seo.jsx";
 
 const BlogEditorUpdate = () => {
   const { blogId } = useParams();  
@@ -14,6 +15,7 @@ const BlogEditorUpdate = () => {
   const [title, setTitle] = useState(""); 
   const [content, setContent] = useState(""); 
   const [category, setCategory] = useState(""); 
+  const [image, setimage] = useState(""); 
   const [tags, setTags] = useState(""); 
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +29,7 @@ const BlogEditorUpdate = () => {
        
         setTitle(blog.title);
         setContent(blog.content);
+        setimage(blog.image);
         setCategory(blog.categories.join(", ")); 
         setTags(blog.tags.join(", ")); 
       } catch (error) {
@@ -70,6 +73,10 @@ const BlogEditorUpdate = () => {
 
   return (
     <div className="my-4 p-4 space-y-4">
+       <Seo
+      title="DevThought | Update Blog "
+      description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+    />
       <input
         type="text"
         value={title}
@@ -88,6 +95,13 @@ const BlogEditorUpdate = () => {
 
       <input
         type="text"
+        value={image}
+        onChange={(e) => setimage(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded"
+        placeholder="image URL"
+      />
+      <input
+        type="text"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded"
@@ -104,7 +118,7 @@ const BlogEditorUpdate = () => {
 
       <button
         onClick={handleUpdate}
-        className="bg-yellow-500 text-white p-2 rounded"
+        className="bg-black text-white p-2 rounded"
         disabled={loading}
       >
         {loading ? "Saving..." : "Update Blog"}

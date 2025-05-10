@@ -15,13 +15,20 @@ app.use(express.json())
 
 app.use(cookieParser())
 
-// CORS options
 const corsOptions = {
-    origin: "http://localhost:5173", // frontend URL
-    credentials: true, // allow credentials (cookies, tokens)
-  };
+  origin: [
+    "http://localhost:5173",
+    "https://devthroughts.vercel.app/api/v1",
+  ],
+  credentials: true,
+};
 
-  app.use(cors(corsOptions))
+app.use(cors(corsOptions));
+
+
+
+
+
 
   
 app.use("/api/v1",indexRoutes); //base route for all api routes
