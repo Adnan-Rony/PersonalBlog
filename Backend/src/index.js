@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import app from "./app.js"; // Import app (configured Express)
+import app from "./app.js";
 
-dotenv.config();  // Load environment variables from .env file
+dotenv.config();  
 
-const PORT = process.env.PORT || 3002;  // Default to 3002 if no PORT is provided
+const PORT = process.env.PORT || 3002;  
 
 async function main() {
   try {
@@ -20,7 +20,7 @@ async function main() {
     });
   } catch (err) {
     console.error(" Failed to connect to the database", err);
-    process.exit(1); // Exit the process if DB connection fails
+    process.exit(1); 
   }
 }
 

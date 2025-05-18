@@ -88,9 +88,7 @@ const SingleBlog = () => {
     
     <div
   className="prose max-w-none"
-  dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(blog.content),
-  }}
+  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content) }}
 />
 
 
