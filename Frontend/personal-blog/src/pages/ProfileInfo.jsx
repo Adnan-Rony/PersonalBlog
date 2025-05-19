@@ -7,36 +7,28 @@ import ProfileModel from "../components/blog/ProfileModel.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { Link } from "react-router-dom";
 import Seo from "../components/Seo.jsx";
+import { UseFetchMyBlog } from "../Features/blog/blogQuery.js";
+import { UseCurrentUser } from "../Features/users/userQuery.js";
 
 const ProfileInfo = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+
+  const{data: blogs = [], isLoading, isError}=UseFetchMyBlog()
+  const{data: user, }=UseCurrentUser()
+
+  
+  
+
+
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [myBlogResponse, userResponse] = await Promise.all([
-          getMyBlogs(),
-          getLoginuser(),
-        ]);
-        setBlogs(myBlogResponse.data);
-        setUser(userResponse.data);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchData();
-  }, []);
 
-  if (loading) return <LoadingSpinner></LoadingSpinner>;
+  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
+  if(isError) return <p>Error fetch...</p>
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 h-screen">
@@ -49,7 +41,7 @@ const ProfileInfo = () => {
       
       {/* Left: Blog Section */}
       <div className="md:col-span-2 space-y-8">
-        <LeftBlogsection blogs={blogs} setBlogs={setBlogs} />
+        <LeftBlogsection blogs={blogs}  />
       </div>
 
       {/* Right: Profile Sidebar */}

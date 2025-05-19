@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { USER_API_END_POINT } from "../../utils/Constant.js";
+
 import { FiEye } from "react-icons/fi";
 import { FiEyeOff } from "react-icons/fi";
 import img from "../../assets//11785899_4826435.jpg";

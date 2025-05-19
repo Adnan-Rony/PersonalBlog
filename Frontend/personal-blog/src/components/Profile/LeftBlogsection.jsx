@@ -4,45 +4,36 @@ import { Link } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import img from "../../assets/download.png";
 import { MdDeleteOutline } from "react-icons/md";
-import { myblogdelete } from "../../api/blogApi.js";
-import toast from "react-hot-toast";
+
+import Swal from 'sweetalert2';
+import { UseDeleteBlog } from "../../Features/blog/blogQuery.js";
 
 
 const LeftBlogsection = ({ blogs,setBlogs }) => {
+
+  const { mutate: deleteBlog, isLoading: deleting } = UseDeleteBlog();
+
   if (!blogs.length) return <p>No blogs found.</p>;
 
 
-  const handleDelete = (blogId) => {
-    toast((t) => (
-      <span className="flex flex-col gap-2">
-        <p>Are you sure you want to delete this blog?</p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={async () => {
-              try {
-                await myblogdelete(blogId);
-                setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
-                toast.dismiss(t.id);
-                toast.success("Blog deleted successfully.");
-              } catch (err) {
-                toast.dismiss(t.id);
-                toast.error("Failed to delete blog.");
-              }
-            }}
-            className="bg-red-500 text-white px-3 py-1 rounded"
-          >
-            Yes
-          </button>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="bg-gray-300 px-3 py-1 rounded"
-          >
-            No
-          </button>
-        </div>
-      </span>
-    ));
-  };
+
+const handleDelete = (id) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this blog?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteBlog(id); 
+      Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
+    }
+  });
+};
+
 
 
 

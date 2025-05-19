@@ -5,9 +5,9 @@ import Navber from "../components/Shared/Navber.jsx";
 const Mainlayout = () => {
   return (
     <div>
-      <Navber></Navber>
+      {/* <Navber></Navber> */}
 
-      <main className="max-w-screen mx-auto">
+      <main className="max-w-screen-xl mx-auto">
         <Outlet />
       </main>
     </div>

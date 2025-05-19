@@ -2,6 +2,7 @@ import React from "react";
 import img from "../../assets/user-profile-icon-free-vector.jpg"
 
 const CommentItem = ({ comment }) => (
+  
   <div className="flex py-2 gap-2 my-2">
     <img
       src={img}

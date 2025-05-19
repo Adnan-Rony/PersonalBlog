@@ -14,7 +14,7 @@ export const updateBlog =(id,updateData)=> axiosInstance.put(`/blogs/${id}`,upda
 export const getMyBlogs = () => axiosInstance.get("/blogs/myblogs");
 export const getMyBlogsbyid = (id) => axiosInstance.get(`/blogs/myblogs/${id}`);
 
-export const postcomment=(blogId, content)=>axiosInstance.post(`/blogs/comments/${blogId}`,{content})
+
 
 export const editblog = (id, updatedata) => axiosInstance.put(`/blogs/updateblogs/${id}`, updatedata);
 

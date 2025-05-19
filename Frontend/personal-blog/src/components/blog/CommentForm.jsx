@@ -7,7 +7,7 @@ const CommentForm = ({ inputData, onChange, onSubmit, submitting }) => (
       onChange={onChange}
       placeholder="Add a comment..."
       className="input w-full p-2 bg-gray-200 border-none rounded"
-      rows={3}
+      rows={3} required
     />
     <button
       type="submit"

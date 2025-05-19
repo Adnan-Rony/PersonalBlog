@@ -1,174 +1,145 @@
 import React, { useState, useMemo } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
 import Quill from "quill";
-
-
-
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 
-import { createBlog } from "../api/blogApi.js";
 import Seo from "../components/Seo.jsx";
-
-
+import { UseCreateBlog } from "../Features/blog/blogQuery.js";
 
 const BlogEditor = () => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
-  const [image, setimage] = useState("");
+  const [image, setImage] = useState("");
   const [tags, setTags] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
 
+  const { mutate: submitBlog, isLoading } = UseCreateBlog();
 
-
+  // Whitelist fonts
   const Font = Quill.import("formats/font");
   Font.whitelist = ["sans-serif", "serif", "monospace"];
   Quill.register(Font, true);
-  
-  // Toolbar options for ReactQuill
-  const toolbarOptions = [
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    [{ font: [] }],
-    ["bold", "italic", "underline", "strike"],
-    ["blockquote", "code-block"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ script: "sub" }, { script: "super" }],
-    [{ indent: "-1" }, { indent: "+1" }],
-    [{ direction: "rtl" }],
-    ["link", "image"],
-    [{ color: [] }, { background: [] }],
-    [{ align: [] }],
-    ["clean"]
-  ];
-  
-  const quillModules = useMemo(() => ({
-    toolbar: toolbarOptions,
-  }), []);
-  
-  
 
-  const handleFinalPost = async (e) => {
+  const quillModules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        [{ font: [] }],
+        ["bold", "italic", "underline"],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+
+        [{ direction: "rtl" }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+        ["clean"],
+      ],
+    }),
+    []
+  );
+
+  const handleFinalPost = (e) => {
     e.preventDefault();
 
-    const blogData={
+    const blogData = {
       title,
       content,
       categories: category,
       image,
       tags: tags.split(",").map((tag) => tag.trim()),
-    }
+    };
 
-    try {
-      const response = await createBlog(blogData)
-
-      if (response.status === 201 || response.status === 200) {
+    submitBlog(blogData, {
+      onSuccess: () => {
         toast.success("Blog posted successfully!");
         setTitle("");
         setContent("");
         setCategory("");
         setTags("");
-        setimage("");
-        setShowModal(false);
+        setImage("");
+
         navigate("/");
-      } else {
-        toast.error("Server did not return success status.");
-      }
-    } catch (error) {
-      console.error("Error posting blog:", error.response?.data || error.message);
-      toast.error("Failed to post blog.");
-    }
+      },
+      onError: (error) => {
+        console.error("Failed to post blog:", error);
+        toast.error(error?.response?.data?.message || "Failed to post blog.");
+      },
+    });
   };
 
   return (
-    <div className="my-4 space-y-3 p-4 relative z-10">
-       <Seo
-      title="DevThought | Write Blog "
-      description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+  <div className="my-4 space-y-5 p-4 max-w-screen-xl mx-auto">
+  <Seo
+    title="DevThought | Write Blog"
+    description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+  />
+
+  {/* Blog Title */}
+  <input
+    type="text"
+    placeholder="Blog Title"
+    className="w-full lg:p-3 p-2 border  border-gray-300 rounded-md text-base"
+    value={title}
+    onChange={(e) => setTitle(e.target.value)}
+    required
+  />
+
+  {/* Image URL */}
+  <input
+    type="text"
+    placeholder="Image URL"
+    value={image}
+    onChange={(e) => setImage(e.target.value)}
+    className="w-full lg:p-3 p-2 border border-gray-300 rounded-md text-base"
+  />
+
+  {/* ReactQuill Editor */}
+  <div className="relative">
+    <ReactQuill
+      theme="snow"
+      value={content}
+      modules={quillModules}
+      onChange={(value) => setContent(value)}
+      placeholder="Write your blog content here..."
+      className="bg-white rounded-md lg:h-64 h-64 overflow-y-auto"
     />
-      <input
-        type="text"
-        placeholder="Blog Title"
-        className="w-full p-2 border border-gray-300 rounded"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-     
+  </div>
 
-      <div className="quill-container overflow-visible z-10">
-        <ReactQuill
-          theme="snow"
-          value={content}
-          modules={quillModules}
-          onChange={(value) => setContent(value)}
-          className="bg-white mb-10 "
-          placeholder="Write your blog content here..."
-        />
-      </div>
+  {/* Category */}
+  <input
+    type="text"
+    placeholder="Category"
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    className="w-full lg:p-3 p-2 border border-gray-300 rounded-md text-base"
+  />
 
-      <button
-        onClick={() => setShowModal(true)}
-        className="bg-black text-white btn btn-outline rounded-2xl"
-      >
-        Publish
-      </button>
+  {/* Tags */}
+  <input
+    type="text"
+    placeholder="Tags (comma separated)"
+    value={tags}
+    onChange={(e) => setTags(e.target.value)}
+    className="w-full lg:p-3 p-2 border border-gray-300 rounded-md text-base"
+  />
 
-      {/* Modal */}
-      {showModal && (
-        <div
-          className="fixed inset-0   bg-opacity-30 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          onKeyDown={(e) => e.key === "Escape" && setShowModal(false)}
-        >
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4 relative">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold">Add Category & Tags</h3>
-              <button onClick={() => setShowModal(false)}>
-                <RxCross1 />
-              </button>
-            </div>
 
-            <input
-              type="text"
-              placeholder="image URL"
-              value={image}
-              onChange={(e) => setimage(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-            <input
-              type="text"
-              placeholder="Category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-            <p>Add or change tags (up to 5) so readers know what your story is about</p>
-            <input
-              type="text"
-              placeholder="Tags (comma separated)"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
-            />
+  {/* Publish Button */}
+  <div className="pt-3">
+    <button
+      onClick={handleFinalPost}
+      disabled={isLoading}
+      className="w-full md:w-auto bg-black text-white py-2 px-6 rounded-2xl hover:bg-gray-800 transition"
+    >
+      {isLoading ? "Publishing..." : "Publish"}
+    </button>
+  </div>
+</div>
 
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={handleFinalPost}
-                className="bg-black text-white btn btn-outline rounded-2xl"
-              >
-                Publish and send now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
   );
 };
 
