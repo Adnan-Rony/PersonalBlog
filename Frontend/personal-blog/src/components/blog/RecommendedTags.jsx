@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../api/axiosInstance.js";
+
 import { Link } from "react-router-dom";
 import LoadingSpinner from "../LoadingSpinner.jsx";
 import { getAllBlogs } from "../../api/blogApi.js";
@@ -7,6 +7,9 @@ import { getAllBlogs } from "../../api/blogApi.js";
 const RecommendedTags = ({ blogsProp }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+
+  
   const allTags = [...new Set(blogs.flatMap((blog) => blog.tags))];
   useEffect(() => {
     const fetchBlogs = async () => {

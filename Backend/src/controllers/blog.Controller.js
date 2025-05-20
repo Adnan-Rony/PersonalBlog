@@ -1,6 +1,8 @@
 import BlogModel from "../models/Blog.model.js";
 import UserModel from "../models/User.model.js";
 
+
+
 export const createBlog = async (req, res) => {
   const { title, content, categories, tags,image } = req.body;
   
@@ -37,23 +39,45 @@ image
   }
 };
 
+export const searchBlogsByTitle = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const blogs = await BlogModel.find({
+      title: { $regex: query, $options: "i" } // case-insensitive search
+    }).select("title"); // only return title and _id
+
+    res.status(200).json({ blogs });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to search blogs",
+      error: error.message,
+    });
+  }
+}
 
 export const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await BlogModel.find()
-    .populate('author', 'name email') // populate author with name and email
-    .populate({
-      path: 'comments',
-      select: 'content author createdAt' ,
-      populate: {
-        path: 'author',
-        select: 'name' // only include the comment author's name
-      }
-    }) 
-      .sort({ createdAt: -1 });         // newest blogs first (optional)
+    const { title } = req.query;
+
+    // Build filter based on title query (case-insensitive partial match)
+    const filter = title
+      ? { title: { $regex: title, $options: 'i' } }
+      : {};
+
+    const blogs = await BlogModel.find(filter)
+      .populate('author', 'name email')
+      .populate({
+        path: 'comments',
+        select: 'content author createdAt',
+        populate: {
+          path: 'author',
+          select: 'name',
+        },
+      })
+      .sort({ createdAt: -1 });
 
     res.status(200).json(blogs);
-
   } catch (error) {
     console.error('Error fetching blogs:', error);
     res.status(500).json({
@@ -62,6 +86,7 @@ export const getAllBlogs = async (req, res) => {
     });
   }
 };
+
 
 export const updateBlog = async (req, res) => {
   const { id } = req.params;
@@ -401,3 +426,37 @@ export const searchBlogs = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 }
+
+
+
+export const getRecommendedBlogs = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+
+    // Fetch the blog to get its tags
+    const blog = await BlogModel.findById(blogId);
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    const { tags } = blog;
+
+    // Find blogs with similar tags, excluding the original blog
+    const recommendedBlogs = await BlogModel.find({
+      _id: { $ne: blogId },
+      tags: { $in: tags },
+    })
+      .limit(5)
+      .sort({ createdAt: -1 })
+      .populate('author', 'name email');
+
+    res.status(200).json(recommendedBlogs);
+  } catch (error) {
+    console.error('Error fetching recommended blogs:', error);
+    res.status(500).json({
+      message: 'Error fetching recommended blogs',
+      error: error.message,
+    });
+  }
+};

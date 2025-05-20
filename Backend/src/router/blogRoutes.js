@@ -9,9 +9,11 @@ import {
   getBlogsAllCategories,
   getBlogsByCategory,
   getBlogsByTag,
+  getRecommendedBlogs,
   getSingleBlog,
   getUserBlogs,
   searchBlogs,
+  searchBlogsByTitle,
   updateBlog,
   updateBlogStatus,
   updateUserBlog
@@ -39,9 +41,13 @@ router.get("/myblogs",verifyToken,getUserBlogs)
 router.get("/myblogs/:id",verifyToken,getSingleBlog)
 router.delete("/myblogs/:id",verifyToken,deleteUserBlog)
 
+// GET /blogs/recommendations/:blogId
+router.get('/recommendations/:blogId', getRecommendedBlogs);
 
 
 router.put("/updateblogs/:id",verifyToken,updateUserBlog)
+
+router.get("/search", searchBlogsByTitle);
 
 
 router.put("/editblog/:id",verifyToken,updateBlog)

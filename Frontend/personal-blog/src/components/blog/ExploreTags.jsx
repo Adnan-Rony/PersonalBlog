@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance.js";
 import { Link } from "react-router-dom";
+import Seo from "../Seo.jsx";
 
 const ExploreTags = () => {
   const [tags, setTags] = useState([]);

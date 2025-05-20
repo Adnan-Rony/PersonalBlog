@@ -39,3 +39,6 @@ export const FetchAdminUser=async(userId)=>{
     const res=await axiosInstance.get('/users',userId)
     return res.data
 }
+
+
+export const userprofileupdate=(id,updatedData)=>axiosInstance.put(`users/profile/${id}`,updatedData)

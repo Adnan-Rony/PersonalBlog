@@ -29,7 +29,7 @@ export const getAllUsers = () => axiosInstance.get('/users');
 
 export const getLoginuser=()=>axiosInstance.get("/users/me")
 
-export const userprofileupdate=(id,updatedData)=>axiosInstance.put(`users/profile/${id}`,updatedData)
+
 
 //admin dashboard
 

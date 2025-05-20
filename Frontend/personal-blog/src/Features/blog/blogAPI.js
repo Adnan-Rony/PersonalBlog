@@ -6,6 +6,12 @@ export const fetchBlogs=async()=>{
     return res.data
 }
 
+export const fetchBlogRecommendation = async (blogId) => {
+  const res = await axiosInstance.get(`/blogs/recommendations/${blogId}`);
+  return res.data;
+};
+
+
 export const fetchBlogId = async (id) => {
   const res = await axiosInstance.get(`/blogs/${id}`);
   return res.data;
@@ -47,9 +53,19 @@ export const updateMyBlog=async({id,updatedData})=>{
 }
 
 
-export const mydeleteProduct=async(id)=>{
+export const mydeleteBlog=async(id)=>{
     const res=await axiosInstance.delete(`/blogs/myblogs/${id}`)
     return res.data
 }
 
 export const postcomment=(blogId, content)=>axiosInstance.post(`/blogs/comments/${blogId}`,{content})
+
+
+export const searchBlog = async (searchTerm) => {
+  const res = await axiosInstance.get(`/blogs/search`, {
+    params: { query: searchTerm },
+  });
+  return res.data;
+};
+
+

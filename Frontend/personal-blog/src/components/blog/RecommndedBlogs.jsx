@@ -1,65 +1,76 @@
-import img1 from "../../assets/download.png"
+import img1 from "../../assets/download.png";
 import { MdOutlineTipsAndUpdates } from "react-icons/md";
 import { GoComment } from "react-icons/go";
-import { useEffect, useState } from "react";
-import axiosInstance from "../../api/axiosInstance.js";
+
 import { Link } from "react-router-dom";
+import { UseBlogRecommendations, UseFetchBlog } from "../../Features/blog/blogQuery.js";
 
+const RecommndedBlogs = ({ blogId }) => {
+  const { data, isLoading, error } = UseBlogRecommendations(blogId);
 
+  
 
-const RecommndedBlogs = ({currentBlogId}) => {
+ 
 
-    const [recommended, setRecommended] = useState([]);
-
-    useEffect(() => {
-        const fetchBlogs = async () => {
-          try {
-            const res = await axiosInstance.get("/blogs");
-            const shuffled = res.data.sort(() => 0.5 - Math.random());
-            setRecommended(shuffled.slice(0, 6)); // show 2 random blogs
-          } catch (error) {
-            console.error("Error fetching recommended blogs", error);
-          }
-        };
-    
-        fetchBlogs();
-      }, [currentBlogId]);
-
-
-
-
-
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  if (!data || data.length === 0) return <p>No recommended blogs found.</p>;
 
   return (
     <div>
-     
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 my-10">
-      {recommended.map((blog) => (
-        <Link to={`/blogs/${blog._id}`} key={blog._id} className="p-4  rounded hover:shadow-md transition">
-          <img
-            className="w-full object-cover h-32 mb-2"
-            src={blog.thumbnail || img1}
-            alt={blog.title}
-          />
-          <p className="font-semibold text-lg">{blog.title}</p>
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {blog.content.replace(/<[^>]+>/g, '').slice(0, 40)}...
-          </p>
-          <div className="flex items-center mt-4 gap-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <MdOutlineTipsAndUpdates className="text-xl" />
-              <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+        {data.map((blog, index) => (
+          <Link key={index} to={`/blogs/${blog._id}`}>
+            <div className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+              <img
+                src={blog.image || img1}
+                alt={blog.title}
+                 loading="lazy"
+                className="w-full lg:h-56 h-46 lg:object-cover rounded-xl"
+              />
+
+              <div className="p-4 space-y-3">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {blog.tags?.slice(0, 3).map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs bg-blue-100 text-blue-600 font-medium px-3 py-1 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Title */}
+                <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 line-clamp-2">
+                  {blog.title}
+                </h2>
+
+                {/* Author & Meta */}
+                <div className="text-sm text-gray-500 flex flex-wrap gap-4 items-center">
+                  <p>{blog.author?.name || "Unknown Author"}</p>
+                  <p>{new Date(blog.createdAt).toLocaleDateString()}</p>
+                  <p>💬 {blog.comments?.length ?? 0}</p>
+                </div>
+
+                {/* Content Preview */}
+                <p className="text-sm text-gray-700 line-clamp-3">
+                  {blog.content.replace(/<[^>]+>/g, "").slice(0, 80)}...
+                </p>
+
+                {/* Read More Button (Optional) */}
+                <div>
+                  <button className="btn btn-outline border-blue-200  text-blue-500 rounded-3xl hover:text-white hover:bg-blue-600">
+                    Read More
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <GoComment className="text-xl" />
-              <span>{blog.comments?.length || 0}</span>
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
+          </Link>
+        ))}
       </div>
-   
+    </div>
   );
 };
 

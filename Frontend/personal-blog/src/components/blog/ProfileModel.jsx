@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import img from "../../assets/user-profile-icon-free-vector.jpg";
-import { userprofileupdate } from "../../api/blogApi.js";
+
 import { toast } from "react-hot-toast";
+import { userprofileupdate } from "../../Features/users/userAPI.js";
+
+
+
 
 const ProfileModel = ({ closeModal, userId, initialData }) => {
   const [name, setName] = useState(initialData?.name || "");

@@ -1,7 +1,5 @@
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
 import img from "../assets/download.png";
-import RecommendedTags from "../components/blog/RecommendedTags.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import Seo from "../components/Seo.jsx";
 import { UseFetchBlog } from "../Features/blog/blogQuery.js";
@@ -9,93 +7,73 @@ import { UseFetchBlog } from "../Features/blog/blogQuery.js";
 const AllBlogs = () => {
   const { data: blogs = [], isLoading, isError } = UseFetchBlog();
 
- 
-
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <p className="text-red-500">Failed to load blogs.</p>;
 
   return (
-    <div className="">
+    <div className="max-w-screen-xl mx-auto py-4">
       <Seo
         title="DevThought | Home page  "
         description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 px-4 py-6 space-y-2">
-        <div className="lg:col-span-8 space-y-5  ">
-          {/* categories */}
-          {/* <div className="flex items-center gap-2 flex-wrap overflow-x-auto">
-            {visibleCategories.map((cat, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-gray-100 rounded text-sm whitespace-nowrap"
-              >
-                {cat}
-              </span>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 px-4  space-y-2">
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : blogs && blogs.length > 0 ? (
+          blogs.map((blog, index) => (
+            <Link key={index} to={`/blogs/${blog._id}`}>
+              <div className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                <img
+                  src={blog.image || img}
+                  alt={blog.title}
+                  loading="lazy"
+                  className="w-full lg:h-56 h-46 lg:object-cover rounded-xl"
+                />
 
-            {cleanedCategories.length > 8 && (
-              <button onClick={() => setExpanded(!expanded)} className="">
-                {expanded ? (
-                  <MdKeyboardArrowLeft className="text-3xl cursor-auto" />
-                ) : (
-                  <MdKeyboardArrowRight className="text-3xl" />
-                )}
-              </button>
-            )}
-          </div> */}
-
-          {/* <hr className="text-gray-300 " /> */}
-
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : blogs && blogs.length > 0 ? (
-            blogs.map((blog, index) => (
-              <Link key={index} to={`/blogs/${blog._id}`}>
-                <div className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row gap-4 space-y-2 my-2">
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      {blog.title}
-                    </h2>
-                    <div className="text-gray-600">
-                      {blog.content.replace(/<[^>]+>/g, "").slice(0, 100)}...
-                    </div>
-                    <div className="text-sm text-gray-500 mt-2 flex items-center gap-4">
-                      <span>
-                        {new Date(blog.createdAt).toLocaleDateString()}
+                <div className="p-4 space-y-3">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {blog.tags?.slice(0, 3).map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="text-xs bg-blue-100 text-blue-600 font-medium px-3 py-1 rounded-full"
+                      >
+                        {tag}
                       </span>
-                      <span>💬 {blog.comments?.length ?? 0}</span>
-                    </div>
+                    ))}
                   </div>
-                  <div className="flex-shrink-0">
-                    <img
-                      src={blog.image || img}
-                      alt={blog.title}
-                      className="w-32 h-32 object-cover rounded-lg"
-                    />
+
+                  {/* Title */}
+                  <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 line-clamp-2">
+                    {blog.title}
+                  </h2>
+
+                  {/* Author & Meta */}
+                  <div className="text-sm text-gray-500 flex flex-wrap gap-4 items-center">
+                    <p>{blog.author?.name || "Unknown Author"}</p>
+                    <p>{new Date(blog.createdAt).toLocaleDateString()}</p>
+                    <p>💬 {blog.comments?.length ?? 0}</p>
+                  </div>
+
+                  {/* Content Preview */}
+                  <p className="text-sm text-gray-700 line-clamp-3">
+                    {blog.content.replace(/<[^>]+>/g, "").slice(0, 80)}...
+                  </p>
+
+                  {/* Read More Button (Optional) */}
+                  <div>
+                    <button className="btn btn-outline border-blue-200  text-blue-500 rounded-3xl hover:text-white hover:bg-blue-600">
+                      Read More
+                    </button>
                   </div>
                 </div>
-              </Link>
-            ))
-          ) : (
-            <p>No blogs found.</p>
-          )}
-        </div>
-
-        <div className="lg:col-span-4 space-y-6">
-          {/* <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-lg font-semibold mb-4">Staff Picks</h3>
-            <ul className="space-y-2">
-              <li>
-                <p className="text-sm font-medium">
-                  Can You Spot Fake News?...
-                </p>
-                <span className="text-xs text-gray-500">Apr 18</span>
-              </li>
-            </ul>
-          </div> */}
-          {/* <RecommendedTags blogsProp={blogs}></RecommendedTags> */}
-        </div>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p>No blogs found.</p>
+        )}
       </div>
     </div>
   );

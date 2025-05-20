@@ -1,14 +1,17 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 import Navber from "../components/Shared/Navber.jsx";
+import Navvber from "../components/Shared/Navvber.jsx";
 
 const Mainlayout = () => {
   return (
-    <div>
+    <div className=" ">
       {/* <Navber></Navber> */}
+      <Navvber></Navvber>
 
-      <main className="max-w-screen-xl mx-auto">
+      <main className="   bg-[#f0f5fa] ">
         <Outlet />
+          <ScrollRestoration />
       </main>
     </div>
   );
