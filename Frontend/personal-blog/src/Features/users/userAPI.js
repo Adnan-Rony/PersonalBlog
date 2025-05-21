@@ -12,16 +12,27 @@ export const RegisterUser=async(userId)=>{
     return res.data
 }
 
+export const loginOrRegisterGoogleUser = async (userData) => {
+  const response = await axiosInstance.post('/auth/google', userData);
+  return response.data;
+};
+
+
 
 export const LogoutUser = async () => {
+  try {
+    console.log("Sending logout request...");
+    const res = await axiosInstance.post('/users/logout');
+    console.log("Logout API response:", res);
 
-  await axiosInstance.post('/users/logout');
 
-
-  localStorage.removeItem('accessToken');
-
- 
+  } catch (error) {
+    console.error("Logout error in API:", error);
+    throw new Error(error.response?.data?.message || 'Logout failed');
+  }
 };
+
+
 
 
 export const CurrentUser = async () => {

@@ -1,6 +1,6 @@
 
 
-import { CurrentUser, FetchAdminUser, LoginUser, LogoutUser, MakeAdminUser, RegisterUser } from "./userAPI.js"
+import { CurrentUser, FetchAdminUser, loginOrRegisterGoogleUser, LoginUser, LogoutUser, MakeAdminUser, RegisterUser } from "./userAPI.js"
 import { useMutation, useQuery, } from "@tanstack/react-query";
 //login
 export const UseLogin=()=>useMutation({
@@ -14,9 +14,19 @@ export const UseRegister=()=>useMutation({
 
 
 //Logout
-export const Uselogout=()=>useMutation({
-    mutationFn:LogoutUser
-})
+export const Uselogout = () => {
+  return useMutation({
+    mutationFn: LogoutUser,
+  });
+};
+
+export const UseGoogleLogin=()=>{
+  return useMutation({
+    mutationFn:loginOrRegisterGoogleUser
+    
+  })
+}
+
 
 
 export const UseCurrentUser=()=>

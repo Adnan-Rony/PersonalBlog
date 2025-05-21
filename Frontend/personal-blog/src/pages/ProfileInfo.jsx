@@ -1,7 +1,7 @@
 // src/pages/ProfileInfo.jsx
 import React, { useEffect, useState } from "react";
 import { getMyBlogs, getLoginuser } from "../api/blogApi.js";
-import img from "../assets/user-profile-icon-free-vector.jpg";
+import img from "../assets/user-1.jpg";
 import LeftBlogsection from "../components/Profile/LeftBlogsection.jsx";
 import ProfileModel from "../components/blog/ProfileModel.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
@@ -31,7 +31,7 @@ const ProfileInfo = () => {
   if(isError) return <p>Error fetch...</p>
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 h-screen">
+    <div className="max-w-screen-xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 h-screen">
        <Seo
       title="DevThought | Profile  "
       description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
@@ -45,41 +45,46 @@ const ProfileInfo = () => {
       </div>
 
       {/* Right: Profile Sidebar */}
-      <div className="md:col-span-1">
-        {user && (
-          <div>
-            <img
-              src={user.user.profilePicture || img}
-              alt="Profile"
-              className="w-10 h-10 rounded-full "
-            />
-            <h3 className="mt-4 text-xl font-semibold">{user.user.name}</h3>
-            <p className="text-gray-500 text-sm">{user.user.email}</p>
-            <p className="text-gray-600 text-sm mt-2 leading-relaxed">
-              {user.user.bio}
-            </p>
-           <div className="flex items-center gap-2">
-           <button
-              onClick={openModal}
-              className="text-green-600  font-medium text-sm mt-3 inline-block"
-            >
-              Edit profile
-            </button>
+     <div className="md:col-span-1 mt-4 bg-white rounded-xl shadow p-6 w-full flex flex-col items-center text-center">
+  {user && (
+    <>
+      {/* Profile Image */}
+      <img
+        src={user.user.profilePicture || img}
+        alt="Profile"
+        loading="lazy"
+        className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+      />
 
-            {/* ✅ Admin-only button */}
-            {user.user.role === "admin" && (
-              <Link to="/dashboard/admin">
-                <button className="text-green-600 font-medium text-sm mt-3 inline-block">
-                  Dashboard
-                </button>
-              </Link>
-            )}
-           </div>
+      {/* Name */}
+      <h3 className="mt-4 text-xl font-semibold text-gray-900">
+        {user.user.name}
+      </h3>
 
-            {isModalOpen && <ProfileModel closeModal={closeModal} />}
-          </div>
-        )}
+      {/* Email */}
+      <p className="text-gray-500 text-sm">{user.user.email}</p>
+
+      {/* Bio */}
+      <p className="text-gray-600 text-sm mt-2 leading-relaxed">
+        {user.user.bio || "No bio available."}
+      </p>
+
+      {/* Edit Profile Button */}
+      <div className="mt-4">
+        <button
+          onClick={openModal}
+          className="text-sm px-4 py-2 bg-blue-100 text-blue-600 rounded-full font-medium hover:bg-blue-200 transition"
+        >
+          Edit Profile
+        </button>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && <ProfileModel closeModal={closeModal} />}
+    </>
+  )}
+</div>
+
     </div>
   );
 };

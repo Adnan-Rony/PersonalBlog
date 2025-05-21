@@ -13,18 +13,45 @@ export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const existingUser = await UserModel.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: 'User already exists' });
+    let user = await UserModel.findOne({ email });
+
+    // 👇 If user already exists
+    if (user) {
+      // If it's an email/password login, throw error
+      if (password) {
+        return res.status(400).json({ success: false, message: 'User already exists' });
+      }
+
+      // If it's a Google login (no password), just "log them in"
+      const token = generateToken(user);
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Google sign-in successful',
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          createdAt: user.createdAt,
+        },
+      });
     }
 
-    let user;
+    // 👇 If user doesn't exist
     if (password) {
-      const passwordError = validatePassword(password); // Ensure this function exists
+      const passwordError = validatePassword(password);
       if (passwordError) {
         return res.status(400).json({ success: false, message: passwordError });
       }
-      
+
       const hashedPassword = await bcrypt.hash(password, 10);
       user = await UserModel.create({ name, email, password: hashedPassword });
     } else {
@@ -33,12 +60,11 @@ export const registerUser = async (req, res) => {
 
     const token = generateToken(user);
 
-    // Set token in a cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
+      maxAge: 5 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(201).json({
@@ -56,6 +82,46 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ success: false, message: 'Registration failed', error: err.message });
   }
 };
+
+
+
+export const loginOrRegisterGoogleUser = async (req, res) => {
+  const { name, email } = req.body;
+
+  try {
+    let user = await UserModel.findOne({ email });
+
+    if (!user) {
+      // New user — register them
+      user = await UserModel.create({ name, email, password: 'google-oauth' });
+    }
+
+    const token = generateToken(user);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 5 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Google sign-in successful',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Google login failed', error: err.message });
+  }
+};
+
+
 
 
 // Login User

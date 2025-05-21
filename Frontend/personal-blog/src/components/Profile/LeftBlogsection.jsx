@@ -5,78 +5,74 @@ import { BsThreeDots } from "react-icons/bs";
 import img from "../../assets/download.png";
 import { MdDeleteOutline } from "react-icons/md";
 
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { UseDeleteBlog } from "../../Features/blog/blogQuery.js";
 
-
-const LeftBlogsection = ({ blogs,setBlogs }) => {
-
+const LeftBlogsection = ({ blogs, setBlogs }) => {
   const { mutate: deleteBlog, isLoading: deleting } = UseDeleteBlog();
 
   if (!blogs.length) return <p>No blogs found.</p>;
 
-
-
-const handleDelete = (id) => {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you really want to delete this blog?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      deleteBlog(id); 
-      Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
-    }
-  });
-};
-
-
-
-
-
-
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this blog?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteBlog(id);
+        Swal.fire("Deleted!", "Your blog has been deleted.", "success");
+      }
+    });
+  };
 
   return (
     <div>
       {blogs.map((blog) => (
         <div
           key={blog._id}
-          className="bg-white rounded-lg shadow p-4 flex justify-between flex-col md:flex-row gap-4 space-y-2 my-2"
+          className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row justify-between gap-4 my-4"
         >
-          <div>
+          {/* Left Side - Content */}
+          <div className="flex-1">
             <Link to={`/blogs/${blog._id}`}>
-              <div className="text-gray-600">
+              <div className="text-gray-600 space-y-2">
                 <h2 className="text-xl font-bold text-gray-900">
                   {blog.title}
                 </h2>
-                <p>{blog.content.replace(/<[^>]+>/g, "").slice(0, 100)}...</p>
+                <p className="text-sm text-gray-700">
+                  {blog.content.replace(/<[^>]+>/g, "").slice(0, 100)}...
+                </p>
               </div>
             </Link>
-            <div className="text-sm text-gray-500 mt-2 flex items-center gap-4">
+
+            {/* Meta Info */}
+            <div className="text-sm text-gray-500 mt-3 flex flex-wrap items-center gap-4">
               <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
               <span>💬 {blog.comments.length}</span>
 
               <Link to={`/blogs/update/${blog._id}`}>
-                <BsThreeDots className="text-2xl cursor" />
+                <BsThreeDots className="text-2xl cursor-pointer" />
               </Link>
 
-              <MdDeleteOutline onClick={()=>handleDelete(blog._id)} className="text-2xl cursor" />
-
-
-
-
-
+              <MdDeleteOutline
+                onClick={() => handleDelete(blog._id)}
+                className="text-2xl text-red-500 cursor-pointer"
+              />
             </div>
           </div>
-          <div>
+
+          {/* Right Side - Image */}
+          <div className="md:w-52 w-full">
             <img
-              src={img}
+              src={blog.image || img}
               alt="thumbnail"
-              className="w-52 h-32 object-cover rounded"
+              loading="lazy"
+              className="w-full h-32 object-cover rounded"
             />
           </div>
         </div>
