@@ -2,10 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import img from "../../assets/user-1.jpg";
 import { UseCurrentUser, Uselogout } from "../../Features/users/userQuery.js";
 import SearchBar from "../SearchBar.jsx";
+import { HiOutlinePencilSquare } from "react-icons/hi2";
 
 const Navvber = () => {
   const { data } = UseCurrentUser();
-  const { mutate: logout, isLoading, } = Uselogout();
+  const { mutate: logout, isLoading } = Uselogout();
 
   const navigate = useNavigate();
 
@@ -40,6 +41,22 @@ const Navvber = () => {
         {/* Center: Search bar */}
         <div className="flex-grow min-w-0 mx-4">
           <SearchBar />
+        </div>
+
+        <div className="p-2 hidden md:block">
+          <button
+            onClick={() => {
+              if (!data?.user) {
+                navigate("/login");
+              } else {
+                navigate("/blog");
+              }
+            }}
+            className="text-2xl text-gray-800 hover:text-blue-600"
+            aria-label="Write Blog"
+          >
+            <HiOutlinePencilSquare />
+          </button>
         </div>
 
         {/* Right: Profile */}

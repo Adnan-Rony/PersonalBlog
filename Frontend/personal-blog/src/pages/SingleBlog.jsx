@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import img from "../assets/user-profile-icon-free-vector.jpg";
 import CommentForm from "../components/blog/CommentForm.jsx";
 import CommentItem from "../components/blog/CommentItem.jsx";
@@ -21,25 +21,33 @@ const SingleBlog = () => {
   const { id } = useParams();
   const { data: blog, isLoading, isError, refetch } = UseFetchBlogById(id);
   const { data: user } = UseCurrentUser();
-
+const navigate = useNavigate();
   const [inputData, setInputData] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!inputData.trim()) return;
-    try {
-      setSubmitting(true);
-      await postcomment(id, inputData);
-      setInputData("");
-      await refetch();
-      queryClient.invalidateQueries({ queryKey: ["blog", id] });
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!user?.user) {
+    navigate("/login"); // Redirect to login if not logged in
+    return;
+  }
+
+  if (!inputData.trim()) return;
+
+  try {
+    setSubmitting(true);
+    await postcomment(id, inputData);
+    setInputData("");
+    await refetch();
+    queryClient.invalidateQueries({ queryKey: ["blog", id] });
+  } catch (error) {
+    console.error("Error adding comment:", error);
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <p className="text-center mt-10">Blog not found.</p>;
@@ -99,6 +107,7 @@ const SingleBlog = () => {
               onChange={(e) => setInputData(e.target.value)}
               onSubmit={handleSubmit}
               submitting={submitting}
+               disabled={!user?.user}
             />
             <hr className="my-10 border-gray-200" />
             {blog.comments

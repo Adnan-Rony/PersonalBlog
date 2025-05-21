@@ -21,7 +21,7 @@ const RecommndedBlogs = ({ blogId }) => {
       <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 my-10">
         {data.map((blog, index) => (
           <Link key={index} to={`/blogs/${blog._id}`}>
-            <div className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+            <div className=" rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
               <img
                 src={blog.image || img1}
                 alt={blog.title}
