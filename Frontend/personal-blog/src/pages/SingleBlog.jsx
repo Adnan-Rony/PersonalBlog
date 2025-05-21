@@ -66,7 +66,7 @@ const SingleBlog = () => {
 
           <div className="my-4 pt-4">
             <img
-              className="w-full lg:h-[450px] h-48 object-cover rounded-2xl"
+              className="w-full  object-cover rounded-2xl"
               src={blog.image}
               alt="Blog Banner"
             />

@@ -23,12 +23,12 @@ const AllBlogs = () => {
         ) : blogs && blogs.length > 0 ? (
           blogs.map((blog, index) => (
             <Link key={index} to={`/blogs/${blog._id}`}>
-              <div className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+              <div className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden lg:h-[510px]">
                 <img
                   src={blog.image || img}
                   alt={blog.title}
                   loading="lazy"
-                  className="w-full lg:h-56 h-46 lg:object-cover rounded-xl"
+                  className="w-full lg:h-56  object-center  lg:object-cover rounded-xl"
                 />
 
                 <div className="p-4 space-y-3">

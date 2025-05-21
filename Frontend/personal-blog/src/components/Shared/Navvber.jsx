@@ -71,7 +71,7 @@ const Navvber = () => {
                   </li>
                   <li>
                     <Link
-                      to="/signup"
+                      to="/SignIn"
                       className="block px-4 py-2 hover:bg-gray-100 rounded"
                     >
                       Sign Up
