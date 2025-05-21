@@ -17,7 +17,7 @@ const SearchBar = () => {
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Search blogs..."
+        placeholder="Search blogs title..."
         className="w-full rounded-md border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
           transition duration-200 ease-in-out text-base md:text-lg"

@@ -3,6 +3,8 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
+
+import Seo from "../components/Seo.jsx";
 import {
   adminblogdatadelete,
   getAllUsers,
@@ -10,8 +12,7 @@ import {
   getdataAdminDashboardOverview,
   getLoginuser,
   makeadmin,
-} from "../api/blogApi.js";
-import Seo from "../components/Seo.jsx";
+} from "../Features/admin/adminAPI.js";
 
 const AdminDashboard = () => {
   const [overview, setOverview] = useState(null);
@@ -94,12 +95,11 @@ const AdminDashboard = () => {
   }
 
   return (
-    
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
-       <Seo
-      title="DevThought | Admin Dashboard  "
-      description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
-    />
+      <Seo
+        title="DevThought | Admin Dashboard  "
+        description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
+      />
       {/* Sidebar */}
       <div className="w-full md:w-64 bg-white shadow-md p-4 md:p-6">
         <div className="mb-6">

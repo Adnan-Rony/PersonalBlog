@@ -17,8 +17,9 @@ app.use(cookieParser())
 
 const corsOptions = {
   origin: [
+    "https://devthrought.vercel.app/",
     "http://localhost:5173",
-    "https://devthroughts.vercel.app/api/v1",
+    
   ],
   credentials: true,
 };

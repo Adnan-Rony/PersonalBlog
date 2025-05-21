@@ -1,6 +1,6 @@
 import axiosInstance from "./axiosInstance.js";
 
-//blogs api
+
 export const getAllBlogs=()=> axiosInstance.get("/blogs")
 
 export const getBlogById =(id)=> axiosInstance.get(`/blogs/${id}`)
@@ -24,14 +24,14 @@ export const myblogdelete=(blogId)=>axiosInstance.delete(`/blogs/myblogs/${blogI
 
 
 
-//users api
+
 export const getAllUsers = () => axiosInstance.get('/users');
 
 export const getLoginuser=()=>axiosInstance.get("/users/me")
 
 
 
-//admin dashboard
+
 
 export const getdataAdminDashboard=()=>axiosInstance.get("/admin/dashboard")
 export const getdataAdminDashboardOverview=()=>axiosInstance.get("/admin/dashboard/overview")

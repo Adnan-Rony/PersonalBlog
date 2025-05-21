@@ -72,7 +72,7 @@ const BlogEditorUpdate = () => {
   };
 
   return (
-    <div className="my-4 p-4 space-y-4">
+    <div className="py-10 space-y-5 p-4 max-w-screen-xl mx-auto h-screen">
        <Seo
       title="DevThought | Update Blog "
       description="Explore all blog posts on various topics including tech, life, and tips. Stay informed with our latest posts."
@@ -84,6 +84,22 @@ const BlogEditorUpdate = () => {
         className="w-full p-2 border border-gray-300 rounded"
         placeholder="Blog Title"
       />
+       {/* Image Upload */}
+      <input
+        type="file"
+        accept="image/*"
+        
+        className="w-full file-input file-input-primary"
+      />
+
+      {/* Show Uploaded Image Preview */}
+      {image && (
+        <img
+          src={image}
+          alt="Uploaded preview"
+          className="w-full max-w-md h-auto rounded-md border object-cover sm:max-w-xs"
+        />
+      )}
 
       <ReactQuill
         theme="snow"

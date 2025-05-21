@@ -25,12 +25,12 @@ export const registerUser = async (req, res) => {
       // If it's a Google login (no password), just "log them in"
       const token = generateToken(user);
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
-      });
+res.cookie('token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 5 * 24 * 60 * 60 * 1000,
+});
 
       return res.status(200).json({
         success: true,
@@ -98,12 +98,12 @@ export const loginOrRegisterGoogleUser = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 5 * 24 * 60 * 60 * 1000,
-    });
+res.cookie('token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 5 * 24 * 60 * 60 * 1000,
+});
 
     return res.status(200).json({
       success: true,
@@ -142,12 +142,12 @@ export const loginUser = async (req, res) => {
     const token = generateToken(user);
 
     // Set token in a cookie
-    res.cookie('token', token, {
-      httpOnly: true, // Prevent JavaScript access
-      secure: process.env.NODE_ENV === 'production', // HTTPS in production
-      sameSite: 'strict', // CSRF protection
-      maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days, matching expiresIn: '5d'
-    });
+  res.cookie('token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 5 * 24 * 60 * 60 * 1000,
+});
 
     console.log("✅ Logged in user:", user.email);
     res.status(200).json({
