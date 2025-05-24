@@ -5,7 +5,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 
 import { UseLogin } from "../users/userQuery.js";
-import GoogleSignIn from "./GoogleSignIn.jsx";
+// import GoogleSignIn from "./GoogleSignIn.jsx";
 
 const Login = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -36,7 +36,7 @@ const Login = () => {
 
         {/* Optional Google Login */}
         <div className="mb-6">
-          <GoogleSignIn />
+          {/* <GoogleSignIn /> */}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

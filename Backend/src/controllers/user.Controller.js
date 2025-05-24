@@ -203,14 +203,24 @@ export const getCurrentUser = async (req, res) => {
 
 
 export const logoutUser = (req, res) => {
-  res.cookie('token', '', {
-    httpOnly: true,
-    expires: new Date(0), // Set expiry in past
-    sameSite: 'Lax',
-    secure: process.env.NODE_ENV === 'production',
-  });
+   try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
 
-  res.status(200).json({ success: true, message: 'Logged out successfully' });
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully.',
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again.',
+    });
+  }
 };
 
 
