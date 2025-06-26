@@ -15,6 +15,7 @@ import {
 import { UseCurrentUser } from "../Features/users/userQuery.js";
 import { postcomment } from "../Features/blog/blogAPI.js";
 import { extractHeadingsFromHTML } from "../utils/extractHeadings.js";
+import SingleBlogSkeleton from "../components/loader/SingleBlogSkeleton.jsx";
 
 const SingleBlog = () => {
   const queryClient = useQueryClient();
@@ -49,7 +50,8 @@ const handleSubmit = async (e) => {
 };
 
 
-  if (isLoading) return <LoadingSpinner />;
+ if (isLoading) return <SingleBlogSkeleton />;
+
   if (isError) return <p className="text-center mt-10">Blog not found.</p>;
 
   // Extract table of contents
