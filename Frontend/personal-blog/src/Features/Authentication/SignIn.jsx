@@ -5,9 +5,13 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { UseRegister } from "../users/userQuery.js";
 
-
 const SignIn = () => {
-  const { register, handleSubmit, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const { mutate: registerUser, isPending } = UseRegister();
@@ -20,7 +24,9 @@ const SignIn = () => {
         navigate("/");
       },
       onError: (err) => {
-        toast.error("Registration failed: " + err?.message || "Unknown error");
+        const message =
+          err?.response?.data?.message || err?.message || "Unknown error";
+        toast.error(message);
       },
     });
   };
@@ -41,12 +47,14 @@ const SignIn = () => {
             </label>
             <input
               id="name"
-              {...register("name")}
+              {...register("name", { required: "Username is required" })}
               type="text"
-              required
               placeholder="Your username"
               className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Email */}
@@ -56,12 +64,20 @@ const SignIn = () => {
             </label>
             <input
               id="email"
-              {...register("email")}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Invalid email address",
+                },
+              })}
               type="email"
-              required
               placeholder="you@example.com"
               className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -72,8 +88,24 @@ const SignIn = () => {
             <input
               id="password"
               type={showPassword ? "text" : "password"}
-              {...register("password")}
-              required
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
+                },
+                validate: {
+                  hasUpperCase: (value) =>
+                    /[A-Z]/.test(value) || "Must include an uppercase letter",
+                  hasLowerCase: (value) =>
+                    /[a-z]/.test(value) || "Must include a lowercase letter",
+                  hasNumber: (value) =>
+                    /\d/.test(value) || "Must include a number",
+                  hasSpecialChar: (value) =>
+                    /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
+                    "Must include a special character",
+                },
+              })}
               placeholder="••••••••"
               className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
@@ -83,6 +115,11 @@ const SignIn = () => {
             >
               {showPassword ? <FiEye /> : <FiEyeOff />}
             </span>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}

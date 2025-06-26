@@ -7,7 +7,7 @@ import { UseBlogRecommendations, UseFetchBlog } from "../../Features/blog/blogQu
 
 const RecommndedBlogs = ({ blogId }) => {
   const { data, isLoading, error } = UseBlogRecommendations(blogId);
-
+  
   
 
  
