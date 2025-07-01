@@ -20,7 +20,8 @@ const corsOptions = {
     "https://devthought.vercel.app",
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://ecommercetechdev.vercel.app"
+    "https://ecommercetechdev.vercel.app",
+    "https://adnanrony.netlify.app/"
     
   ],
   credentials: true,
