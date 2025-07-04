@@ -14,6 +14,7 @@ import {
   getUserBlogs,
   searchBlogs,
   searchBlogsByTitle,
+  unlikeBlog,
   updateBlog,
   updateBlogStatus,
   updateUserBlog
@@ -40,6 +41,12 @@ router.put("/:blogId/like", verifyToken, likeBlog);
 router.get("/myblogs",verifyToken,getUserBlogs)
 router.get("/myblogs/:id",verifyToken,getSingleBlog)
 router.delete("/myblogs/:id",verifyToken,deleteUserBlog)
+
+
+//like,unlike
+router.put("/:id/like", verifyToken, likeBlog);
+router.put("/:id/unlike", verifyToken, unlikeBlog);
+
 
 // GET /blogs/recommendations/:blogId
 router.get('/recommendations/:blogId', getRecommendedBlogs);

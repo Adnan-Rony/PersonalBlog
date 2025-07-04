@@ -460,3 +460,43 @@ export const getRecommendedBlogs = async (req, res) => {
     });
   }
 };
+
+
+
+//  LIKE BLOG
+export const likeBlog = async (req, res) => {
+  const blogId = req.params.id;
+  const userId = req.user.id;
+
+  const blog = await BlogModel.findById(blogId);
+  if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+  if (blog.likes.includes(userId)) {
+    return res.status(400).json({ message: "Already liked this blog" });
+  }
+
+  blog.likes.push(userId);
+  await blog.save();
+
+  res.status(200).json({ message: "Liked successfully", totalLikes: blog.likes.length });
+};
+
+
+
+//  UNLIKE BLOG
+export const unlikeBlog = async (req, res) => {
+  const blogId = req.params.id;
+  const userId = req.user.id;
+
+  const blog = await BlogModel.findById(blogId);
+  if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+  if (!blog.likes.includes(userId)) {
+    return res.status(400).json({ message: "You haven't liked this blog" });
+  }
+
+  blog.likes = blog.likes.filter(id => id.toString() !== userId);
+  await blog.save();
+
+  res.status(200).json({ message: "Unliked successfully", totalLikes: blog.likes.length });
+};
