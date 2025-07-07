@@ -1,6 +1,6 @@
 // routes/userRoutes.js
 import express from 'express';
-import { followUser, getAllUsers, getCurrentUser, loginOrRegisterGoogleUser, loginUser, logoutUser, makeAdmin, registerUser, unfollowUser, updateUserProfile } from '../controllers/user.Controller.js';
+import { followUser, getAllUsers, getCurrentUser, getUserFollowers, getUserFollowing, loginOrRegisterGoogleUser, loginUser, logoutUser, makeAdmin, registerUser, unfollowUser, updateUserProfile } from '../controllers/user.Controller.js';
 import { checkAdmin } from './../middleware/checkAdmin.js';
 import { verifyToken } from './../middleware/verifyToken.js';
 
@@ -20,9 +20,15 @@ router.get('/me',verifyToken, getCurrentUser)
 router.post('/logout',verifyToken, logoutUser)
 router.put('/makeadmin/:id', verifyToken, makeAdmin);
 router.put("/profile/:id", verifyToken, updateUserProfile);
-router.put("/follow/:id", verifyToken, followUser);
-router.put("/unfollow/:id", verifyToken, unfollowUser);
 
+
+router.put("/:id/follow", verifyToken, followUser);
+router.put("/:id/unfollow", verifyToken, unfollowUser);
+
+
+
+router.get("/:id/followers",verifyToken, getUserFollowers);
+router.get("/:id/following",verifyToken, getUserFollowing);
 
 
 export default router;

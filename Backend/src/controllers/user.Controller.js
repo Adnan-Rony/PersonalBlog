@@ -170,7 +170,9 @@ sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 //get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await UserModel.find({}).select('-password'); // Exclude password from the response
+    const users = await UserModel.find({}).select('-password')
+     .populate("followers", "name email profilePicture") 
+      .populate("following", "name email profilePicture"); 
     res.status(200).json(users);
   } catch (err) {
     console.error("Error fetching users:", err);
@@ -178,9 +180,15 @@ export const getAllUsers = async (req, res) => {
   }
 }
 
+
+
 export const getCurrentUser = async (req, res) => {
   try {
-    const user = await UserModel.findById(req.user.id).select('-password'); // Exclude password
+    const user = await UserModel.findById(req.user.id).select('-password')
+      .populate("followers", "name email profilePicture") 
+      .populate("following", "name email profilePicture");
+
+
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
@@ -192,6 +200,8 @@ export const getCurrentUser = async (req, res) => {
         email: user.email,
         role: user.role,
         bio:user.bio,
+        followers:user.followers,
+        following:user.following,
         profilePicture:user.profilePicture,
         createdAt: user.createdAt,
       },
@@ -255,7 +265,7 @@ export const makeAdmin = async (req, res) => {
   }
 };
  
-// ✏️ Update user profile
+//  Update user profile
 export const updateUserProfile = async (req, res) => {
   const {name, email, bio, profilePicture } = req.body;
 
@@ -279,8 +289,6 @@ export const updateUserProfile = async (req, res) => {
     res.status(500).json({ message: "Error updating profile", error: err.message });
   }
 };
-
-
 
 
 
@@ -330,3 +338,38 @@ export const unfollowUser = async (req, res) => {
   res.status(200).json({ message: "Unfollowed successfully" });
 };
 
+
+
+// Get a user's followers
+export const getUserFollowers = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await UserModel.findById(userId)
+      .populate("followers", "name email profilePicture") // You can select any fields
+      .select("followers");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ followers: user.followers });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+export const getUserFollowing = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await UserModel.findById(userId).select("following");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const followingIds = user.following.map(id => id.toString());
+
+    res.status(200).json({ following: followingIds });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

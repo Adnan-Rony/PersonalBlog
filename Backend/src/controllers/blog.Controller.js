@@ -75,6 +75,7 @@ export const getAllBlogs = async (req, res) => {
           select: 'name',
         },
       })
+      .populate("likes", "name email profilePicture")
       .sort({ createdAt: -1 });
 
     res.status(200).json(blogs);
@@ -140,7 +141,9 @@ export const getUserBlogs=async (req,res)=>{
         path: 'author',
         select: 'name' // only include the comment author's name
       }
+       
     })
+    .populate("likes", "name email profilePicture"); 
 
     res.status(200).json(blogs)
   } catch(err){
@@ -187,7 +190,8 @@ export const getSingleBlog = async (req, res) => {
           path: 'author',
           select: 'name'  // Populate comment author's name
         }
-      });
+      })
+     .populate("likes", "name email profilePicture"); 
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });

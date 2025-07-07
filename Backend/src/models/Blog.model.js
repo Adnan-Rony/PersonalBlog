@@ -11,7 +11,27 @@ const blogSchema=new mongoose.Schema({
       type: String, // will store image path
       default: '',
     },
-    categories: [{ type: String }], 
+categories: {
+  type: String,
+  enum: [
+    'Web Development',
+    'portfolio',
+    'Mobile Development',
+    'Frontend',
+    'Backend',
+    'Full Stack',
+    'DevOps',
+    'APIs & Integration',
+    'Programming Languages',
+    'Open Source'
+  ],
+  required: true
+}
+
+      
+    
+    
+    , 
     tags: {
       type: [String],
       default: []
