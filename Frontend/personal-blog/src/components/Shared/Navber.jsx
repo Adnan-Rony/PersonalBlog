@@ -1,218 +1,143 @@
-import axios from "axios";
-import React, { useContext, useEffect, useState, useRef } from "react";
-import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
-import { Authcontext } from "../../context/AuthProvider.jsx";
-import { USER_API_END_POINT } from "../../utils/Constant.js";
-import axiosInstance from "../../api/axiosInstance.js";
-import { Search } from "lucide-react";
-import img from "../../assets/user-profile-icon-free-vector.jpg";
-import { LiaEdit } from "react-icons/lia";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { FiMenu, FiX, FiChevronDown, FiSearch } from "react-icons/fi";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaInstagram,
+  FaPinterestP,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
 
-const Navber = () => {
-  const { Firebaseuser, Firebaselogout } = useContext(Authcontext);
-  const [user, setUser] = useState(null);
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [searchVisible, setSearchVisible] = useState(false);
-  const [mobileDropdown, setMobileDropdown] = useState(false);
-  const navigate = useNavigate();
-  const profileRef = useRef();
-  const currentUser = user || Firebaseuser;
+const menuItems = [
+  {
+    name: "Home",
+   
+  },
+  { name: "All Blogs" },
+ 
+  
+  { name: "Contact" },
+];
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`${USER_API_END_POINT}/me`, {
-          withCredentials: true,
-        });
-        if (response.data.success) setUser(response.data.user);
-      } catch {
-        setUser(null);
-      }
-    };
+const socialIcons = [
+  FaFacebookF,
+  FaTwitter,
+  FaInstagram,
+  FaPinterestP,
+  FaTiktok,
+  FaYoutube,
+];
 
-    fetchUser();
+const Navbar = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
 
-    // Refresh user when Firebaseuser updates
-  }, [Firebaseuser]);
-
-  const logoutHandler = async () => {
-    try {
-      if (Firebaseuser) {
-        await Firebaselogout();
-      } else {
-        await axios.get(`${USER_API_END_POINT}/logout`, {
-          withCredentials: true,
-        });
-      }
-      setUser(null);
-      navigate("/login");
-      toast.success("Logged out successfully!");
-    } catch (error) {
-      toast.error("Logout failed", error);
-    }
+  const toggleDropdown = (name) => {
+    setDropdownOpen(dropdownOpen === name ? null : name);
   };
-
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (!query) return setSuggestions([]);
-      try {
-        const res = await axiosInstance.get(`/blogs/search?query=${query}`);
-        setSuggestions(res.data);
-        setShowDropdown(true);
-      } catch {
-        setSuggestions([]);
-      }
-    };
-    const timeout = setTimeout(fetchSuggestions, 300);
-    return () => clearTimeout(timeout);
-  }, [query]);
-
-  const handleSelect = (blogId) => {
-    navigate(`/blogs/${blogId}`);
-    setQuery("");
-    setSuggestions([]);
-    setShowDropdown(false);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setMobileDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
-    <div className="bg-base-100 w-full px-4 py-2 sticky top-0 z-50 shadow">
-      <div className="mx-auto flex justify-between items-center">
-        <div className="flex gap-2 items-center">
-          <Link to="/" className="text-xl font-semibold whitespace-nowrap">
-            DevThoughts
+    <>
+      {/* Top Navbar */}
+      <header className="bg-white shadow z-50 sticky top-0">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          {/* Logo */}
+          <Link to="/" className="text-3xl font-bold text-gray-800 flex items-center">
+            Katen<span className="text-pink-500 text-4xl ml-1">.</span>
           </Link>
 
-          {/* Desktop Search */}
-          <div className="hidden md:block relative w-48 sm:w-64">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => query.length > 0 && setShowDropdown(true)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-              placeholder="    Search blogs..."
-              className="input w-full px-4 py-2 pr-10 rounded"
-            />
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
-            {showDropdown && suggestions.length > 0 && (
-              <ul className="absolute left-0 right-0 mt-1 bg-white rounded shadow z-50">
-                {suggestions.map((blog) => (
-                  <li
-                    key={blog._id}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleSelect(blog._id)}
-                  >
-                    {blog.title}
-                  </li>
-                ))}
-              </ul>
-            )}
+          {/* Desktop Menu */}
+          <nav className="hidden md:flex gap-6 items-center">
+            {menuItems.map((item) => (
+              <div key={item.name} className="relative group">
+                <button
+                  className={`text-sm font-medium ${
+                    item.name === "Home"
+                      ? " text-white px-4 py-2 rounded-full"
+                      : "text-gray-600 hover:text-black"
+                  } flex items-center gap-1`}
+                  onClick={() => toggleDropdown(item.name)}
+                >
+                  {item.name}
+                  {item.subItems && <FiChevronDown />}
+                </button>
+
+                {item.subItems && (
+                  <div className="absolute hidden group-hover:block bg-white shadow rounded mt-2 z-20 w-44">
+                    {item.subItems.map((sub, index) => (
+                      <Link
+                        key={index}
+                        to="/"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        {sub}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* Social & Icons */}
+          <div className="hidden md:flex items-center gap-3">
+            {socialIcons.map((Icon, i) => (
+              <Icon key={i} className="text-gray-800 hover:text-pink-500 text-lg" />
+            ))}
+            <button className="w-9 h-9 rounded-full bg-gradient-to-r from-pink-500 to-orange-400 flex justify-center items-center text-white">
+              <FiSearch />
+            </button>
+            <button
+              className="w-9 h-9 rounded-full bg-gradient-to-r from-pink-500 to-orange-400 flex justify-center items-center text-white"
+              onClick={() => setMobileOpen(true)}
+            >
+              <FiMenu />
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-3">
-          {/* Desktop Write Button */}
-          <Link to="/blog" className="hidden md:inline-block">
-            <div className="flex gap-1">
-              <LiaEdit className="text-2xl flex items-center" />
-              Write
-            </div>
-          </Link>
-
-          {/* Mobile Search Icon */}
-          <button
-            className="md:hidden btn btn-ghost btn-circle"
-            onClick={() => setSearchVisible((prev) => !prev)}
-          >
-            <Search className="text-gray-500 w-4 h-4" />
-          </button>
-
-          {/* Profile or Get Started */}
-          {currentUser ? (
-            <div className="relative" ref={profileRef}>
-              <img
-                src={
-                  user?.profilePicture || Firebaseuser?.photoURL || img
-                }
-                onClick={() => setMobileDropdown((prev) => !prev)}
-                alt="Profile"
-                className="lg:w-10 lg:h-10 w-6 h-6 rounded-full object-cover cursor-pointer"
-              />
-              {mobileDropdown && (
-                <ul className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md p-2 z-50 text-sm">
-                  <li>
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 hover:bg-gray-100"
-                    >
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={logoutHandler}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
-          ) : (
-            <Link
-              to="/login"
-              className="btn btn-outline text-white bg-black px-3 py-2 rounded md:hidden"
-            >
-              Get Started
+      {/* Mobile Fullscreen Menu */}
+      {mobileOpen && (
+        <div className="fixed inset-0 bg-white z-50 p-6">
+          <div className="flex justify-between items-center mb-8">
+            <Link to="/" className="text-3xl font-bold text-gray-800 flex items-center">
+              Katen<span className="text-pink-500 text-4xl ml-1">.</span>
             </Link>
-          )}
-        </div>
-      </div>
+            <FiX className="text-2xl" onClick={() => setMobileOpen(false)} />
+          </div>
 
-      {/* Mobile Search Bar */}
-      {searchVisible && (
-        <div className="mt-2 md:hidden">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => query.length > 0 && setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            placeholder="Search blogs..."
-            className="input input-bordered w-full px-4 py-2 rounded"
-          />
-          {showDropdown && suggestions.length > 0 && (
-            <ul className="absolute left-0 right-0 mt-1 bg-white border rounded shadow z-50">
-              {suggestions.map((blog) => (
-                <li
-                  key={blog._id}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleSelect(blog._id)}
-                >
-                  {blog.title}
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul className="space-y-4 text-gray-800 text-lg">
+            {menuItems.map((item) => (
+              <li key={item.name}>
+                <div className="flex justify-between items-center border-b pb-2">
+                  <span>{item.name}</span>
+                  {item.subItems && <FiChevronDown />}
+                </div>
+                {item.subItems && (
+                  <ul className="ml-4 mt-2 space-y-2">
+                    {item.subItems.map((sub, i) => (
+                      <li key={i} className="text-sm text-gray-600">
+                        {sub}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex justify-center gap-5 mt-10">
+            {socialIcons.map((Icon, i) => (
+              <Icon key={i} className="text-xl text-gray-800 hover:text-pink-500" />
+            ))}
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
-export default Navber;
+export default Navbar;

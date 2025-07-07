@@ -16,6 +16,10 @@ import ProfileInfo from "../pages/ProfileInfo.jsx";
 
 import BlogEditorUpdate from "../pages/BlogEditorUpdate.jsx";
 import BlogEditor from "../pages/BlogEditor.jsx";
+import CategoryPage from "../pages/CategoryPage.jsx";
+import AllBlogs from "../pages/AllBlogs.jsx";
+import ContactSection from './../pages/ContactUs';
+import PrivateRoute from "./PrivateRoute.jsx";
 
 export const AppRouter = createBrowserRouter([
   {
@@ -37,7 +41,15 @@ export const AppRouter = createBrowserRouter([
      
       {
         path: "/blog",
-        element: <BlogEditor></BlogEditor>
+        element:<PrivateRoute> <BlogEditor></BlogEditor></PrivateRoute>
+      },
+      {
+        path: "/allblogs",
+        element: <AllBlogs/>
+      },
+      {
+        path: "/contact",
+        element: <ContactSection/>
       },
     
       {
@@ -52,6 +64,10 @@ export const AppRouter = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfileInfo/>
+      },
+      {
+        path: "/categories",
+        element: <CategoryPage/>
       },
       {
         path: "/blogs/update/:blogId",

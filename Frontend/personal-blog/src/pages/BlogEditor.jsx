@@ -133,13 +133,26 @@ const BlogEditor = () => {
       </div>
 
       {/* Category */}
-      <input
-        type="text"
-        placeholder="Category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="w-full lg:p-3 p-2 border border-gray-300 rounded-md text-base"
-      />
+   {/* Category Dropdown */}
+<select
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+  className="w-full lg:p-3 p-2 border border-gray-300 rounded-md text-base bg-white"
+  required
+>
+  <option value="">Select Category</option>
+  <option value="Web Development">Web Development</option>
+  <option value="portfolio">Portfolio</option>
+  <option value="Mobile Development">Mobile Development</option>
+  <option value="Frontend">Frontend</option>
+  <option value="Backend">Backend</option>
+  <option value="Full Stack">Full Stack</option>
+  <option value="DevOps">DevOps</option>
+  <option value="APIs & Integration">APIs & Integration</option>
+  <option value="Programming Languages">Programming Languages</option>
+  <option value="Open Source">Open Source</option>
+</select>
+
 
       {/* Tags */}
       <input

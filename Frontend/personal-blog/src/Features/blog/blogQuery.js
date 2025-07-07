@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createBlog, createBlogComment, fetchBlogId, fetchBlogRecommendation, fetchBlogs, fetchMyBlog, mydeleteBlog, searchBlog,   } from './blogAPI.js';
+import { createBlog, createBlogComment, fetchBlogId, fetchBlogRecommendation, fetchBlogs, fetchMyBlog, mydeleteBlog, searchBlog, updateMyBlogLike, updateMyBlogUnlikeLike,   } from './blogAPI.js';
 
 
 
@@ -70,5 +70,36 @@ export const UseBlogRecommendations = (blogId) => {
     queryKey: ['blogRecommendations', blogId],
     queryFn: () => fetchBlogRecommendation(blogId),
     enabled: !!blogId, // only run query if blogId is truthy
+  });
+};
+
+
+
+
+// Like Blog
+export const UseLikeBlog = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMyBlogLike,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["blog", variables.id] });
+    },
+    onError: (error) => {
+      console.error("Error liking blog:", error);
+    }
+  });
+};
+
+// Unlike Blog
+export const UseUnlikeBlog = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMyBlogUnlikeLike,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["blog", variables.id] });
+    },
+    onError: (error) => {
+      console.error("Error unliking blog:", error);
+    }
   });
 };

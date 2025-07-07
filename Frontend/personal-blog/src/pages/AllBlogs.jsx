@@ -4,11 +4,13 @@ import Seo from "../components/Seo.jsx";
 import { UseFetchBlog } from "../Features/blog/blogQuery.js";
 import BlogSkeletonGrid from "../components/loader/BlogSkeletonGrid.jsx";
 
+
+
 const AllBlogs = () => {
   const { data: blogs = [], isLoading, isError } = UseFetchBlog();
 
   return (
-    <div className="max-w-screen-xl mx-auto py-4">
+    <div className="container mx-auto py-4">
       {/* SEO Meta Tags */}
       <Seo
         title="DevThought | Home Page"
@@ -65,6 +67,7 @@ const AllBlogs = () => {
                     <p>{blog.author?.name || "Unknown Author"}</p>
                     <p>{new Date(blog.createdAt).toLocaleDateString()}</p>
                     <p>💬 {blog.comments?.length ?? 0}</p>
+                    <p>🤍 {blog.likes?.length ?? 0}</p>
                   </div>
 
                   {/* Content Preview */}

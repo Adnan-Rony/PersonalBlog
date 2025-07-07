@@ -2,7 +2,7 @@ import axiosInstance from "../../api/axiosInstance.js"
 
 export const fetchBlogs=async()=>{
     const res=await axiosInstance.get('/blogs')
-    console.log(res.data)
+    // console.log(res.data)
     return res.data
 }
 
@@ -67,5 +67,17 @@ export const searchBlog = async (searchTerm) => {
   });
   return res.data;
 };
+
+
+export const updateMyBlogLike=async({id,updatedData})=>{
+    const res=await axiosInstance.put(`/blogs/${id}/like`,updatedData)
+    return res.data
+}
+export const updateMyBlogUnlikeLike=async({id,updatedData})=>{
+    const res=await axiosInstance.put(`/blogs/${id}/unlike`,updatedData)
+    return res.data
+}
+
+
 
 
