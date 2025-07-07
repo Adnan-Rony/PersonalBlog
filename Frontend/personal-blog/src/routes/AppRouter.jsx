@@ -19,7 +19,6 @@ import BlogEditor from "../pages/BlogEditor.jsx";
 import CategoryPage from "../pages/CategoryPage.jsx";
 import AllBlogs from "../pages/AllBlogs.jsx";
 import ContactSection from './../pages/ContactUs';
-import PrivateRoute from "./PrivateRoute.jsx";
 
 export const AppRouter = createBrowserRouter([
   {
@@ -41,7 +40,7 @@ export const AppRouter = createBrowserRouter([
      
       {
         path: "/blog",
-        element:<PrivateRoute> <BlogEditor></BlogEditor></PrivateRoute>
+        element: <BlogEditor></BlogEditor>
       },
       {
         path: "/allblogs",
