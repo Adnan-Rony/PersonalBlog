@@ -3,7 +3,8 @@ import axios from 'axios';
 const axiosInstance = axios.create({
 //  baseURL: import.meta.env.VITE_API_BASE_URL,
 //  baseURL: "https://devthroughts.vercel.app/api/v1",
- baseURL: "http://localhost:3000/api/v1",
+//  baseURL: "http://localhost:3000/api/v1",
+ baseURL: "https://personalblog-1-ubt6.onrender.com/api/v1",
 
   withCredentials: true,
 });
