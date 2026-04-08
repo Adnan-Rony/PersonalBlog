@@ -3,12 +3,10 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-hot-toast";
-
 import { UseLogin } from "../users/userQuery.js";
-// import GoogleSignIn from "./GoogleSignIn.jsx";
 
 const Login = () => {
-  const { register, handleSubmit, reset, setValue } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const { mutate: loginUser, isPending } = UseLogin();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -25,102 +23,79 @@ const Login = () => {
       },
     });
   };
-  const handleDemoUser = () => {
-    setValue("email", "adnanronyy@gmail.com");
-    setValue("password", "Adnan@1999");
-  };
-
-  const handleDemoAdmin = () => {
-    setValue("email", "rony19@gmail.com");
-    setValue("password", "Adnan@1999");
-  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-        <div className="mb-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
-          <p className="text-sm text-gray-500">Login to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a12] px-4">
+
+      {/* Card */}
+      <div className="w-full max-w-md bg-[#11111c] border border-white/10 rounded-2xl p-8 shadow-xl">
+
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Welcome Back 
+          </h2>
+          <p className="text-gray-400 text-sm">
+            Login to your account
+          </p>
         </div>
 
-        {/* Demo Buttons */}
-        <div className="flex justify-center gap-3 mb-4">
-          <button
-            onClick={handleDemoUser}
-            className="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition"
-          >
-            Demo User
-          </button>
-          <button
-            onClick={handleDemoAdmin}
-            className="px-4 py-2 text-sm bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition"
-          >
-            Demo Admin
-          </button>
-        </div>
-
-        <hr className="my-4" />
-
-        {/* Optional Google Login */}
-        <div className="mb-6">{/* <GoogleSignIn /> */}</div>
-
+        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Email Field */}
+
+          {/* Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label className="block text-sm text-gray-400 mb-2">
               Email
             </label>
             <input
-              id="email"
               type="email"
               {...register("email")}
               required
               placeholder="you@example.com"
-              className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
             />
           </div>
 
-          {/* Password Field */}
+          {/* Password */}
           <div className="relative">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label className="block text-sm text-gray-400 mb-2">
               Password
             </label>
+
             <input
-              id="password"
               type={showPassword ? "text" : "password"}
               {...register("password")}
               required
               placeholder="••••••••"
-              className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
             />
+
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[40px] cursor-pointer text-gray-500"
+              className="absolute right-3 top-[42px] cursor-pointer text-gray-500 hover:text-orange-400"
             >
               {showPassword ? <FiEye /> : <FiEyeOff />}
             </span>
           </div>
 
-          {/* Submit Button */}
+          {/* Button */}
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50"
+            className="w-full py-3 rounded-lg bg-orange-500 hover:bg-orange-600 transition font-semibold text-white shadow-lg shadow-orange-500/20 disabled:opacity-50"
           >
             {isPending ? "Logging in..." : "Login"}
           </button>
         </form>
 
         {/* Footer */}
-        <p className="mt-6 text-sm text-center text-gray-600">
+        <p className="mt-6 text-sm text-center text-gray-400">
           Don’t have an account?
-          <Link to="/SignIn" className="text-blue-600 hover:underline ml-1">
+          <Link
+            to="/SignIn"
+            className="text-orange-400 hover:text-orange-500 ml-1 font-medium"
+          >
             Sign up
           </Link>
         </p>

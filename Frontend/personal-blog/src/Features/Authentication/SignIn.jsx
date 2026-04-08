@@ -12,6 +12,7 @@ const SignIn = () => {
     reset,
     formState: { errors },
   } = useForm();
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const { mutate: registerUser, isPending } = UseRegister();
@@ -32,38 +33,48 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-        <div className="mb-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-800">Create an Account</h2>
-          <p className="text-sm text-gray-500">Register to get started</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a12] px-4">
+
+      {/* Card */}
+      <div className="w-full max-w-md bg-[#11111c] border border-white/10 rounded-2xl p-8 shadow-xl">
+
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Create Account 
+          </h2>
+          <p className="text-gray-400 text-sm">
+            Start your journey with us
+          </p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
           {/* Username */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm text-gray-400 mb-2">
               Username
             </label>
             <input
-              id="name"
               {...register("name", { required: "Username is required" })}
               type="text"
               placeholder="Your username"
-              className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              <p className="text-red-400 text-sm mt-1">
+                {errors.name.message}
+              </p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm text-gray-400 mb-2">
               Email
             </label>
             <input
-              id="email"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -73,70 +84,76 @@ const SignIn = () => {
               })}
               type="email"
               placeholder="you@example.com"
-              className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-400 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           {/* Password */}
           <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm text-gray-400 mb-2">
               Password
             </label>
+
             <input
-              id="password"
               type={showPassword ? "text" : "password"}
               {...register("password", {
                 required: "Password is required",
                 minLength: {
                   value: 8,
-                  message: "Password must be at least 8 characters",
+                  message: "At least 8 characters",
                 },
                 validate: {
                   hasUpperCase: (value) =>
-                    /[A-Z]/.test(value) || "Must include an uppercase letter",
+                    /[A-Z]/.test(value) || "1 uppercase required",
                   hasLowerCase: (value) =>
-                    /[a-z]/.test(value) || "Must include a lowercase letter",
+                    /[a-z]/.test(value) || "1 lowercase required",
                   hasNumber: (value) =>
-                    /\d/.test(value) || "Must include a number",
+                    /\d/.test(value) || "1 number required",
                   hasSpecialChar: (value) =>
-                    /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
-                    "Must include a special character",
+                    /[!@#$%^&*]/.test(value) || "1 special character required",
                 },
               })}
               placeholder="••••••••"
-              className="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
             />
+
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[40px] cursor-pointer text-gray-500"
+              className="absolute right-3 top-[42px] cursor-pointer text-gray-500 hover:text-orange-400"
             >
               {showPassword ? <FiEye /> : <FiEyeOff />}
             </span>
+
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-400 text-sm mt-1">
                 {errors.password.message}
               </p>
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Button */}
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50"
+            className="w-full py-3 rounded-lg bg-orange-500 hover:bg-orange-600 transition font-semibold text-white shadow-lg shadow-orange-500/20 disabled:opacity-50"
           >
-            {isPending ? "Registering..." : "Register"}
+            {isPending ? "Registering..." : "Create Account"}
           </button>
         </form>
 
         {/* Footer */}
-        <p className="mt-6 text-sm text-center text-gray-600">
+        <p className="mt-6 text-sm text-center text-gray-400">
           Already have an account?
-          <Link to="/login" className="text-blue-600 hover:underline ml-1">
-            Log In
+          <Link
+            to="/login"
+            className="text-orange-400 hover:text-orange-500 ml-1 font-medium"
+          >
+            Login
           </Link>
         </p>
       </div>

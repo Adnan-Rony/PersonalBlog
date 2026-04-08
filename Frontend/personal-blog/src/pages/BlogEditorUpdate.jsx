@@ -9,29 +9,29 @@ import { editblog, getMyBlogsbyid } from "../api/blogApi.js";
 import Seo from "../components/Seo.jsx";
 
 const BlogEditorUpdate = () => {
-  const { blogId } = useParams();  
+  const { blogId } = useParams();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState(""); 
-  const [content, setContent] = useState(""); 
-  const [category, setCategory] = useState(""); 
-  const [image, setImage] = useState(""); 
-  const [tags, setTags] = useState(""); 
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
+  const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(false);
-  const [newImageFile, setNewImageFile] = useState(null); // Track if new image is selected
+  const [newImageFile, setNewImageFile] = useState(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await getMyBlogsbyid(blogId);
-        const blog = response.data;
+        const res = await getMyBlogsbyid(blogId);
+        const blog = res.data;
+
         setTitle(blog.title);
         setContent(blog.content);
         setImage(blog.image);
         setCategory(blog.categories.join(", "));
         setTags(blog.tags.join(", "));
-      } catch (error) {
-        console.error("Error fetching blog:", error);
+      } catch {
         toast.error("Failed to load blog data.");
       }
     };
@@ -42,24 +42,21 @@ const BlogEditorUpdate = () => {
     const file = e.target.files[0];
     if (file) {
       setNewImageFile(file);
-      setImage(URL.createObjectURL(file)); // Preview the new image
+      setImage(URL.createObjectURL(file));
     }
   };
 
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "blogging"); // Your preset
-    try {
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/dnpycgwch/image/upload", // Replace with your Cloud name
-        formData
-      );
-      return res.data.secure_url;
-    } catch (err) {
-      toast.error("Image upload failed");
-      throw err;
-    }
+    formData.append("upload_preset", "blogging");
+
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/dnpycgwch/image/upload",
+      formData
+    );
+
+    return res.data.secure_url;
   };
 
   const handleUpdate = async (e) => {
@@ -69,7 +66,6 @@ const BlogEditorUpdate = () => {
     try {
       let finalImage = image;
 
-      // If a new image is selected, upload it
       if (newImageFile) {
         finalImage = await uploadToCloudinary(newImageFile);
       }
@@ -78,89 +74,132 @@ const BlogEditorUpdate = () => {
         title,
         content,
         image: finalImage,
-        categories: category.split(",").map((cat) => cat.trim()),
-        tags: tags.split(",").map((tag) => tag.trim()),
+        categories: category.split(",").map((c) => c.trim()),
+        tags: tags.split(",").map((t) => t.trim()),
       };
 
       const res = await editblog(blogId, updatedBlog);
 
       if (res.status === 200) {
-        toast.success("Blog updated successfully!");
+        toast.success("Blog updated!");
         navigate(`/blogs/${blogId}`);
-      } else {
-        toast.error("Failed to update blog.");
       }
-    } catch (err) {
-      console.error("Error updating blog:", err);
-      toast.error("Error updating blog.");
+    } catch {
+      toast.error("Update failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="py-10 space-y-5 p-4 max-w-screen-xl mx-auto h-screen">
-      <Seo
-        title="DevThought | Update Blog"
-        description="Edit your blog post and update its content, image, and more."
-      />
+    <div className="min-h-screen bg-[#0a0a12] text-white px-4 py-10">
+      <Seo title="Update Blog" />
 
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded"
-        placeholder="Blog Title"
-      />
+      <div className="max-w-5xl mx-auto">
 
-      {/* Image Upload */}
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="w-full file-input file-input-primary"
-      />
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold">
+            ✏️ Edit Blog
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Update your content professionally
+          </p>
+        </div>
 
-      {/* Show Uploaded Image Preview */}
-      {image && (
-        <img
-          src={image}
-          alt="Preview"
-          className="w-full max-w-md h-auto rounded-md border object-cover sm:max-w-xs"
-        />
-      )}
+        {/* Card */}
+        <form
+          onSubmit={handleUpdate}
+          className="bg-[#11111c] border border-white/10 rounded-2xl p-5 md:p-8 space-y-6 shadow-xl"
+        >
 
-      <ReactQuill
-        theme="snow"
-        value={content}
-        onChange={setContent}
-        className="bg-white mb-10"
-        placeholder="Update your blog content..."
-      />
+          {/* Title */}
+          <div>
+            <label className="text-sm text-gray-400 mb-2 block">
+              Title
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+            />
+          </div>
 
-      <input
-        type="text"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded"
-        placeholder="Category"
-      />
+          {/* Image Upload */}
+          <div>
+            <label className="text-sm text-gray-400 mb-2 block">
+              Cover Image
+            </label>
 
-      <input
-        type="text"
-        value={tags}
-        onChange={(e) => setTags(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded"
-        placeholder="Tags (comma separated)"
-      />
+            <label className="flex items-center justify-center h-40 border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-orange-500 transition">
+              <span className="text-gray-500 text-sm">
+                Click to upload new image
+              </span>
+              <input
+                type="file"
+                hidden
+                onChange={handleImageChange}
+              />
+            </label>
 
-      <button
-        onClick={handleUpdate}
-        className="bg-black text-white p-2 rounded"
-        disabled={loading}
-      >
-        {loading ? "Saving..." : "Update Blog"}
-      </button>
+            {image && (
+              <img
+                src={image}
+                alt="preview"
+                className="mt-4 w-full h-52 object-cover rounded-lg border border-white/10"
+              />
+            )}
+          </div>
+
+          {/* Editor */}
+          <div>
+            <label className="text-sm text-gray-400 mb-2 block">
+              Content
+            </label>
+
+            <div className="bg-white rounded-xl overflow-hidden">
+              <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={setContent}
+                className="h-60 md:h-80 text-black"
+              />
+            </div>
+          </div>
+
+          {/* Category + Tags */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Categories (comma separated)"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+            />
+
+            <input
+              type="text"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="Tags (comma separated)"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+            />
+          </div>
+
+          {/* Button */}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-3 rounded-lg bg-orange-500 hover:bg-orange-600 transition font-semibold shadow-lg shadow-orange-500/20 disabled:opacity-50"
+            >
+              {loading ? "Updating..." : "Update Blog 🚀"}
+            </button>
+          </div>
+
+        </form>
+      </div>
     </div>
   );
 };

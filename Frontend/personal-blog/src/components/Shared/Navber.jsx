@@ -1,292 +1,250 @@
-import { useContext, useState, useRef, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX, FiChevronDown } from "react-icons/fi";
+import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { FaGithub, FaTwitter, FaLinkedinIn } from "react-icons/fa";
-import { Authcontext } from "../../context/AuthProvider";
+import SearchBar from "../SearchBar.jsx";
+import { UseCurrentUser, Uselogout } from "../../Features/users/userQuery.js";
 
 const NAV = [
-  { name: "Home",    to: "/" },
-  { name: "Blogs",   to: "/allblogs" },
-  { name: "Resume",  to: "/resume" },
+  { name: "Home", to: "/" },
+  { name: "Blogs", to: "/allblogs" },
+  { name: "Resume", to: "/resume" },
   { name: "Contact", to: "/contact" },
 ];
 
+const SOCIAL = [
+  { icon: FaGithub, url: "https://github.com/Adnan-Rony" },
+  { icon: FaTwitter, url: "https://twitter.com/your-username" },
+  { icon: FaLinkedinIn, url: "https://linkedin.com/in/adnan-rony" },
+];
+
 const Navbar = () => {
-  const [open, setOpen]         = useState(false);
-  const [scroll, setScroll]     = useState(false);
+  const [open, setOpen] = useState(false);
+  const [scroll, setScroll] = useState(false);
   const [dropdown, setDropdown] = useState(false);
   const dropRef = useRef(null);
-  const { user, Firebaselogout } = useContext(Authcontext);
+  const navigate = useNavigate();
 
-  // blur navbar on scroll
+  const { data } = UseCurrentUser();
+  const { mutate: logout } = Uselogout();
+  const user = data?.user;
+
+  const handleLogout = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        navigate("/login");
+        setDropdown(false);
+        setOpen(false);
+      },
+      onError: (err) => console.error(err),
+    });
+  };
+
   useEffect(() => {
     const fn = () => setScroll(window.scrollY > 12);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  // close dropdown on outside click
   useEffect(() => {
     const fn = (e) => {
-      if (dropRef.current && !dropRef.current.contains(e.target)) setDropdown(false);
+      if (dropRef.current && !dropRef.current.contains(e.target)) {
+        setDropdown(false);
+      }
     };
     document.addEventListener("mousedown", fn);
     return () => document.removeEventListener("mousedown", fn);
   }, []);
 
   const linkCls = ({ isActive }) =>
-    `text-sm font-medium transition-colors duration-200 ${
-      isActive ? "text-orange-400" : "text-[#9898a8] hover:text-[#e8e6e1]"
+    `text-sm font-medium px-3 py-2 rounded-md transition ${
+      isActive ? "text-orange-400" : "text-gray-400 hover:text-white"
     }`;
 
-  // dropdown items — always show Profile + Share Blog; Dashboard only for admin
   const dropItems = [
-    { icon: "👤", label: "Profile",    to: "/profile" },
+    { icon: "👤", label: "Profile", to: "/profile" },
     { icon: "✍️", label: "Share Blog", to: "/blog" },
-    ...(user?.role === "admin" ? [{ icon: "⚙️", label: "Dashboard", to: "/dashboard/admin" }] : []),
+    ...(user?.role === "admin"
+      ? [{ icon: "⚙️", label: "Dashboard", to: "/dashboard/admin" }]
+      : []),
   ];
 
   return (
     <>
-      <header style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: scroll ? "rgba(8,8,16,0.92)" : "transparent",
-        backdropFilter: scroll ? "blur(18px)" : "none",
-        borderBottom: scroll ? "1px solid rgba(255,255,255,0.07)" : "1px solid transparent",
-        transition: "all 0.3s ease",
-      }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header
+        className={`sticky top-0 z-50 border-b border-white/10 transition ${
+          scroll
+            ? "bg-black/90 backdrop-blur-xl"
+            : "bg-black/60 backdrop-blur-md"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          {/* MAIN ROW */}
+          <div className="h-16 flex items-center justify-between">
 
-          {/* ── Logo ── */}
-          <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
-            <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "1.4rem", color: "#e8e6e1" }}>Dev</span>
-            <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "1.7rem", color: "#f97316", lineHeight: 1 }}>.</span>
-            <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "1.4rem", color: "#e8e6e1" }}>Blog</span>
-          </Link>
+            {/* LOGO */}
+            <Link to="/" className="flex items-center text-xl font-bold">
+              <span className="text-white">Dev</span>
+              <span className="text-orange-500">.</span>
+              <span className="text-white">Blog</span>
+            </Link>
 
-          {/* ── Desktop nav links ── */}
-          <nav className="hidden md:flex" style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            {NAV.map(item => (
-              <NavLink key={item.name} to={item.to} className={linkCls}
-                style={{ padding: "6px 14px", borderRadius: 8 }}>
-                {item.name}
-              </NavLink>
-            ))}
-          </nav>
+            {/* SEARCH */}
+            <div className="hidden md:block flex-1 max-w-md mx-6">
+              <SearchBar />
+            </div>
 
-          {/* ── Right side ── */}
-          <div className="hidden md:flex" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* NAV */}
+            <nav className="hidden md:flex items-center gap-1">
+              {NAV.map((item) => (
+                <NavLink key={item.name} to={item.to} className={linkCls}>
+                  {item.name}
+                </NavLink>
+              ))}
+            </nav>
 
-            {/* Social icons */}
-            {[FaGithub, FaTwitter, FaLinkedinIn].map((Icon, i) => (
-              <button key={i} style={{ background: "transparent", border: "none", color: "#6b6b80", cursor: "pointer", padding: 6, borderRadius: 8, transition: "color 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.color = "#f97316"}
-                onMouseLeave={e => e.currentTarget.style.color = "#6b6b80"}
+            {/* RIGHT SIDE */}
+            <div className="hidden md:flex items-center gap-3">
+
+              {/* SOCIAL MEDIA LINKS */}
+              <div className="flex items-center gap-2">
+                {SOCIAL.map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <a
+                      key={i}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-orange-500 transition"
+                    >
+                      <Icon size={15} />
+                    </a>
+                  );
+                })}
+              </div>
+
+              <div className="w-px h-5 bg-white/10" />
+
+              {/* WRITE */}
+              <button
+                onClick={() => navigate(user ? "/blog" : "/login")}
+                className="text-gray-400 hover:text-orange-500 transition"
               >
-                <Icon size={16} />
+                <HiOutlinePencilSquare size={20} />
               </button>
-            ))}
 
-            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.1)" }} />
+              <div className="w-px h-5 bg-white/10" />
 
-            {/* ── Logged in: avatar + dropdown ── */}
-            {user ? (
-              <div ref={dropRef} style={{ position: "relative" }}>
-                {/* Trigger button */}
-                <button
-                  onClick={() => setDropdown(d => !d)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 100,
-                    padding: "4px 12px 4px 4px",
-                    cursor: "pointer",
-                    transition: "border-color 0.2s",
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(249,115,22,0.45)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
-                >
-                  {/* Profile picture or initial */}
-                  {user.profilePicture ? (
+              {/* PROFILE */}
+              {user ? (
+                <div className="relative" ref={dropRef}>
+                  <button
+                    onClick={() => setDropdown(!dropdown)}
+                    className="flex items-center gap-2 px-2 py-1 rounded-full bg-white/5 border border-white/10"
+                  >
                     <img
                       src={user.profilePicture}
-                      alt={user.name}
-                      style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(249,115,22,0.4)" }}
+                      className="w-7 h-7 rounded-full object-cover border border-orange-500/40"
                     />
-                  ) : (
-                    <div style={{
-                      width: 30, height: 30, borderRadius: "50%",
-                      background: "linear-gradient(135deg,#f97316,#ea580c)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontFamily: "'Syne',sans-serif", fontWeight: 700,
-                      fontSize: "0.78rem", color: "#fff",
-                    }}>
-                      {user.name?.charAt(0).toUpperCase()}
+                    <span className="text-sm text-white max-w-[80px] truncate">
+                      {user.name}
+                    </span>
+                    <FiChevronDown
+                      className={`transition ${
+                        dropdown ? "rotate-180" : ""
+                      }`}
+                      size={14}
+                    />
+                  </button>
+
+                  {/* DROPDOWN */}
+                  {dropdown && (
+                    <div className="absolute right-0 top-12 w-52 bg-[#13131f] border border-white/10 rounded-xl shadow-xl p-2">
+                      <div className="px-3 py-2 border-b border-white/10">
+                        <p className="text-sm text-white">{user.name}</p>
+                        <p className="text-xs text-gray-500">{user.email}</p>
+                      </div>
+
+                      {dropItems.map((item) => (
+                        <Link
+                          key={item.label}
+                          to={item.to}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-orange-500/10 hover:text-white"
+                          onClick={() => setDropdown(false)}
+                        >
+                          <span>{item.icon}</span>
+                          {item.label}
+                        </Link>
+                      ))}
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg"
+                      >
+                        🚪 Logout
+                      </button>
                     </div>
                   )}
-                  <span style={{ fontSize: "0.82rem", color: "#e8e6e1", maxWidth: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {user.name}
-                  </span>
-                  <FiChevronDown
-                    size={13} color="#6b6b80"
-                    style={{ transform: dropdown ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.22s" }}
-                  />
-                </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Link
+                    to="/login"
+                    className="px-4 py-1.5 text-sm border border-white/10 rounded-full text-gray-400 hover:text-white"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/SignIn"
+                    className="px-4 py-1.5 text-sm bg-orange-500 text-white rounded-full"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
 
-                {/* ── Dropdown menu ── */}
-                {dropdown && (
-                  <div style={{
-                    position: "absolute", top: "calc(100% + 10px)", right: 0,
-                    background: "#13131f",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 14, padding: 6,
-                    minWidth: 196,
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
-                    zIndex: 300,
-                    animation: "fadeUp 0.18s ease both",
-                  }}>
-                    {/* User info header */}
-                    <div style={{ padding: "10px 12px 10px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 4 }}>
-                      <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#e8e6e1", fontFamily: "'Syne',sans-serif" }}>{user.name}</div>
-                      <div style={{ fontSize: "0.72rem", color: "#6b6b80", marginTop: 2 }}>{user.email}</div>
-                    </div>
-
-                    {/* Menu items */}
-                    {dropItems.map(item => (
-                      <Link
-                        key={item.label}
-                        to={item.to}
-                        onClick={() => setDropdown(false)}
-                        style={{
-                          display: "flex", alignItems: "center", gap: 10,
-                          padding: "9px 12px", borderRadius: 9,
-                          textDecoration: "none", color: "#9898a8",
-                          fontSize: "0.85rem", transition: "background 0.15s, color 0.15s",
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(249,115,22,0.09)"; e.currentTarget.style.color = "#e8e6e1"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9898a8"; }}
-                      >
-                        <span style={{ fontSize: "1rem" }}>{item.icon}</span>
-                        {item.label}
-                      </Link>
-                    ))}
-
-                    <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "4px 6px" }} />
-
-                    {/* Logout */}
-                    <button
-                      onClick={() => { Firebaselogout(); setDropdown(false); }}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 10,
-                        padding: "9px 12px", borderRadius: 9,
-                        background: "transparent", border: "none",
-                        color: "#f87171", fontSize: "0.85rem",
-                        cursor: "pointer", width: "100%", transition: "background 0.15s",
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = "rgba(248,113,113,0.09)"}
-                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                    >
-                      <span style={{ fontSize: "1rem" }}>🚪</span> Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              /* ── Not logged in ── */
-              <div style={{ display: "flex", gap: 8 }}>
-                <Link to="/login"
-                  style={{ padding: "7px 16px", borderRadius: 100, border: "1px solid rgba(255,255,255,0.12)", color: "#9898a8", fontSize: "0.85rem", textDecoration: "none", transition: "color 0.2s, border-color 0.2s" }}
-                  onMouseEnter={e => { e.currentTarget.style.color = "#e8e6e1"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.28)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = "#9898a8"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
-                >
-                  Login
-                </Link>
-                <Link to="/SignIn"
-                  style={{ padding: "7px 16px", borderRadius: 100, background: "linear-gradient(135deg,#f97316,#ea580c)", color: "#fff", fontSize: "0.85rem", textDecoration: "none", fontWeight: 500 }}
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* ── Mobile hamburger ── */}
-          <button className="md:hidden" onClick={() => setOpen(true)}
-            style={{ background: "transparent", border: "none", color: "#e8e6e1", cursor: "pointer" }}>
-            <FiMenu size={22} />
-          </button>
-        </div>
-      </header>
-
-      {/* ── Mobile full-screen drawer ── */}
-      {open && (
-        <div style={{ position: "fixed", inset: 0, background: "#080810", zIndex: 200, padding: 24, overflowY: "auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-            <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "1.4rem", color: "#e8e6e1" }}>
-              Dev<span style={{ color: "#f97316" }}>.</span>Blog
-            </span>
-            <button onClick={() => setOpen(false)} style={{ background: "transparent", border: "none", color: "#e8e6e1", cursor: "pointer" }}>
-              <FiX size={24} />
+            {/* MOBILE MENU */}
+            <button
+              onClick={() => setOpen(true)}
+              className="md:hidden text-white"
+            >
+              <FiMenu size={22} />
             </button>
           </div>
 
-          {/* User info in mobile */}
-          {user && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, marginBottom: 20 }}>
-              {user.profilePicture ? (
-                <img src={user.profilePicture} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(249,115,22,0.4)" }} />
-              ) : (
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg,#f97316,#ea580c)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne',sans-serif", fontWeight: 700, color: "#fff" }}>
-                  {user.name?.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "#e8e6e1" }}>{user.name}</div>
-                <div style={{ fontSize: "0.72rem", color: "#6b6b80" }}>{user.email}</div>
-              </div>
-            </div>
-          )}
+          {/* MOBILE SEARCH */}
+          <div className="md:hidden pb-3">
+            <SearchBar />
+          </div>
+        </div>
+      </header>
 
-          <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {NAV.map(item => (
-              <Link key={item.name} to={item.to} onClick={() => setOpen(false)}
-                style={{ padding: "13px 16px", color: "#9898a8", textDecoration: "none", fontSize: "1rem", borderRadius: 10, transition: "background 0.2s, color 0.2s" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "rgba(249,115,22,0.08)"; e.currentTarget.style.color = "#f97316"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9898a8"; }}
+      {/* MOBILE DRAWER */}
+      {open && (
+        <div className="fixed inset-0 bg-black z-50 p-6 overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-white text-xl font-bold">
+              Dev<span className="text-orange-500">.</span>Blog
+            </h1>
+            <button onClick={() => setOpen(false)}>
+              <FiX size={24} className="text-white" />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-2">
+            {NAV.map((item) => (
+              <Link
+                key={item.name}
+                to={item.to}
+                onClick={() => setOpen(false)}
+                className="px-4 py-3 text-gray-400 hover:text-orange-500 hover:bg-orange-500/10 rounded-lg"
               >
                 {item.name}
               </Link>
             ))}
-
-            {user && (
-              <>
-                {dropItems.map(item => (
-                  <Link key={item.label} to={item.to} onClick={() => setOpen(false)}
-                    style={{ padding: "13px 16px", color: "#9898a8", textDecoration: "none", fontSize: "1rem", borderRadius: 10, display: "flex", alignItems: "center", gap: 10, transition: "background 0.2s, color 0.2s" }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(249,115,22,0.08)"; e.currentTarget.style.color = "#f97316"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9898a8"; }}
-                  >
-                    <span>{item.icon}</span> {item.label}
-                  </Link>
-                ))}
-                <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "8px 0" }} />
-                <button
-                  onClick={() => { Firebaselogout(); setOpen(false); }}
-                  style={{ padding: "13px 16px", borderRadius: 10, background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171", cursor: "pointer", fontFamily: "'DM Sans',sans-serif", fontWeight: 500, fontSize: "0.95rem", marginTop: 4, display: "flex", alignItems: "center", gap: 10 }}
-                >
-                  🚪 Logout
-                </button>
-              </>
-            )}
-
-            {!user && (
-              <Link to="/login" onClick={() => setOpen(false)}
-                style={{ marginTop: 16, padding: "13px", borderRadius: 100, background: "linear-gradient(135deg,#f97316,#ea580c)", color: "#fff", textDecoration: "none", fontWeight: 500, textAlign: "center" }}
-              >
-                Login
-              </Link>
-            )}
           </nav>
         </div>
       )}

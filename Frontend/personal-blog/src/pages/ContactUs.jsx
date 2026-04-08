@@ -33,92 +33,129 @@ const ContactSection = () => {
   };
 
   return (
-    <div className="bg-white py-16 px-4 sm:px-6 lg:px-8">
-      {/* Contact Info */}
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6 mb-12">
-        {[{
-          icon: <FaPhoneAlt />,
-          title: "Phone",
-          desc: "+8801747430447",
-        }, {
-          icon: <FaEnvelope />,
-          title: "E-Mail",
-          desc: "adnanrony19@gmail.com",
-        }, {
-          icon: <FaMapMarkerAlt />,
-          title: "Location",
-          desc: "Dhaka,Bangladesh",
-        }].map((item, i) => (
-          <div key={i} className="flex items-center bg-white shadow-sm rounded-xl p-6 border">
-            <div className="bg-gradient-to-r from-[#4f49f3] to-[#af1ffe] p-4 rounded-full text-white mr-4">
-              {item.icon}
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900">{item.title}</h4>
-              <p className="text-gray-500 text-sm">{item.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+    <section className="bg-[#0a0a12] py-16 px-4">
+      <div className="max-w-6xl mx-auto">
 
-      {/* Contact Form */}
-      <form ref={formRef} onSubmit={sendEmail}>
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
-            Send Message
+        {/* HEADER */}
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            Contact Me
           </h2>
-          <div className="w-12 h-2 bg-gradient-to-r from-[#4f49f3] to-[#af1ffe] rounded-full mb-8"></div>
+          <p className="text-gray-400 text-sm">
+            Let’s build something amazing together 🚀
+          </p>
+        </div>
+
+        {/* CONTACT CARDS */}
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          {[
+            {
+              icon: <FaPhoneAlt />,
+              title: "Phone",
+              desc: "+8801747430447",
+            },
+            {
+              icon: <FaEnvelope />,
+              title: "Email",
+              desc: "adnanrony19@gmail.com",
+            },
+            {
+              icon: <FaMapMarkerAlt />,
+              title: "Location",
+              desc: "Dhaka, Bangladesh",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-4 bg-[#11111c] border border-white/10 rounded-xl p-6 hover:border-orange-500/40 transition group"
+            >
+              <div className="p-4 rounded-full bg-gradient-to-r from-orange-500 to-yellow-400 text-white text-lg group-hover:scale-110 transition">
+                {item.icon}
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold text-white">
+                  {item.title}
+                </h4>
+                <p className="text-gray-400 text-sm">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* FORM */}
+        <form
+          ref={formRef}
+          onSubmit={sendEmail}
+          className="bg-[#11111c] border border-white/10 rounded-2xl p-6 md:p-10 shadow-xl"
+        >
+          <h3 className="text-2xl font-bold text-white mb-6">
+            Send Message
+          </h3>
 
           <div className="space-y-6">
+
+            {/* NAME + EMAIL */}
             <div className="grid md:grid-cols-2 gap-6">
               <input
                 type="text"
                 name="name"
                 required
                 placeholder="Your name"
-                className="w-full p-4 rounded-full border border-gray-200 focus:ring-2 focus:text-[#4f49f3] focus:outline-none"
+                className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
               />
+
               <input
                 type="email"
                 name="email"
                 required
                 placeholder="Email address"
-                className="w-full p-4 rounded-full border border-gray-200 focus:ring-2 focus:text-[#4f49f3] focus:outline-none"
+                className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
               />
             </div>
 
+            {/* SUBJECT */}
             <input
               type="text"
               name="subject"
               placeholder="Subject"
-              className="w-full p-4 rounded-full border border-gray-200 focus:ring-2 focus:text-[#4f49f3] focus:outline-none"
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
             />
 
+            {/* MESSAGE */}
             <textarea
               name="message"
               rows="5"
               required
-              placeholder="Your message here..."
-              className="w-full p-4 border border-[#af1ffe] rounded-2xl focus:ring-2 focus:text-[#4f49f3] focus:outline-none"
-            ></textarea>
+              placeholder="Write your message..."
+              className="w-full bg-[#0f0f18] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition resize-none"
+            />
 
+            {/* BUTTON */}
             <button
               type="submit"
               disabled={isSending}
-              className="bg-gradient-to-r from-[#4f49f3] to-[#af1ffe] text-white font-semibold px-8 py-3 rounded-full hover:opacity-90 transition"
+              className="w-full md:w-auto px-8 py-3 rounded-lg bg-orange-500 hover:bg-orange-600 transition font-semibold text-white shadow-lg shadow-orange-500/20"
             >
-              {isSending ? "Sending..." : "Send Message"}
+              {isSending ? "Sending..." : "Send Message 🚀"}
             </button>
 
+            {/* STATUS */}
             {successMsg && (
-              <p className={`text-sm mt-4 ${successMsg.includes("successfully") ? "text-green-600" : "text-red-600"}`}>
+              <p
+                className={`text-sm ${
+                  successMsg.includes("successfully")
+                    ? "text-green-400"
+                    : "text-red-400"
+                }`}
+              >
                 {successMsg}
               </p>
             )}
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </section>
   );
 };
 

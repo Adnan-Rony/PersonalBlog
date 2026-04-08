@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiSearch } from "react-icons/fi";
 import { UseSearchBlog } from "../Features/blog/blogQuery.js";
 
 const SearchBar = () => {
@@ -9,37 +10,69 @@ const SearchBar = () => {
 
   const handleSelect = (blogId) => {
     setInput("");
-    navigate(`blogs/${blogId}`);
+    navigate(`/blogs/${blogId}`);
   };
 
   return (
-    <div className="relative w-full">
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Search blogs title..."
-        className="w-full rounded-md border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-          transition duration-200 ease-in-out text-base md:text-lg"
-        aria-label="Search blogs"
-      />
+    <div style={{ position: "relative", width: "100%" }}>
+      {/* Input */}
+      <div style={{ position: "relative" }}>
+        <FiSearch size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#6b6b80", pointerEvents: "none" }} />
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Search articles..."
+          style={{
+            width: "100%",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 10,
+            padding: "9px 14px 9px 34px",
+            color: "#e8e6e1",
+            fontSize: "0.85rem",
+            fontFamily: "'DM Sans',sans-serif",
+            outline: "none",
+            transition: "border-color 0.2s, background 0.2s",
+          }}
+          onFocus={e => { e.target.style.borderColor = "rgba(249,115,22,0.45)"; e.target.style.background = "rgba(255,255,255,0.07)"; }}
+          onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.background = "rgba(255,255,255,0.05)"; }}
+        />
+      </div>
 
+      {/* Results dropdown */}
       {input.trim() && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white shadow-lg border border-gray-200 rounded-md z-50 max-h-60 overflow-y-auto">
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
+          background: "#13131f", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 12, zIndex: 400,
+          maxHeight: 240, overflowY: "auto",
+          boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+        }}>
           {isLoading ? (
-            <p className="p-3 text-gray-500">Loading...</p>
+            <div style={{ padding: "12px 16px", color: "#6b6b80", fontSize: "0.82rem" }}>Searching...</div>
           ) : Array.isArray(data) && data.length > 0 ? (
-            data.map((blog) => (
+            data.map(blog => (
               <button
                 key={blog._id}
                 onClick={() => handleSelect(blog._id)}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm md:text-base"
+                style={{
+                  width: "100%", textAlign: "left",
+                  padding: "10px 16px", background: "transparent",
+                  border: "none", borderBottom: "1px solid rgba(255,255,255,0.05)",
+                  color: "#9898a8", fontSize: "0.85rem",
+                  fontFamily: "'DM Sans',sans-serif",
+                  cursor: "pointer", transition: "background 0.15s, color 0.15s",
+                  display: "flex", alignItems: "center", gap: 10,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(249,115,22,0.08)"; e.currentTarget.style.color = "#e8e6e1"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9898a8"; }}
               >
+                <FiSearch size={12} style={{ color: "#f97316", flexShrink: 0 }} />
                 {blog.title}
               </button>
             ))
           ) : (
-            <p className="p-3 text-gray-500 text-sm">No blogs found.</p>
+            <div style={{ padding: "12px 16px", color: "#6b6b80", fontSize: "0.82rem" }}>No articles found for "{input}"</div>
           )}
         </div>
       )}

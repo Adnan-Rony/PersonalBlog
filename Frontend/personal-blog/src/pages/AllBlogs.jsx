@@ -31,7 +31,7 @@ const AllBlogs = () => {
 
       {/* Blog Grid */}
       {!isLoading && !isError && blogs.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
           {blogs.map((blog) => (
             <Link key={blog._id} to={`/blogs/${blog._id}`} className="h-full">
               <BlogCard blog={blog} />

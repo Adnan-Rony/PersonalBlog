@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { FaGithub, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const SOCIALS = [
-  { Icon: FaGithub,    href: "https://github.com/" },
-  { Icon: FaTwitter,   href: "https://twitter.com/" },
-  { Icon: FaLinkedinIn,href: "https://linkedin.com/" },
-  { Icon: FaInstagram, href: "https://instagram.com/" },
-  { Icon: FaYoutube,   href: "https://youtube.com/" },
+  { Icon: FaGithub,    href: "https://github.com/Adnan-Rony" },
+  { Icon: FaTwitter,   href: "https://twitter.com/AdnanRony" },
+  { Icon: FaLinkedinIn,href: "https://linkedin.com/in/adnan-rony" },
+  { Icon: FaInstagram, href: "https://instagram.com/AdnanRony" },
+  { Icon: FaYoutube,   href: "https://youtube.com/AdnanRony" },
 ];
 
 const LINKS = {
