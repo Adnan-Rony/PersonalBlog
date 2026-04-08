@@ -17,13 +17,13 @@ app.use(cookieParser());
 
 const corsOptions = {
   origin: [
-    'https://devthought.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://ecommercetechdev.vercel.app',
+    'https://devthrought.vercel.app',
+    
     'https://adnanrony.netlify.app',
   ],
-  credentials: true,
+   credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
