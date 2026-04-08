@@ -1,69 +1,55 @@
-import img1 from "../../assets/download.png";
-import { MdOutlineTipsAndUpdates } from "react-icons/md";
-import { GoComment } from "react-icons/go";
-
 import { Link } from "react-router-dom";
-import { UseBlogRecommendations, UseFetchBlog } from "../../Features/blog/blogQuery.js";
+import { UseBlogRecommendations } from "../../Features/blog/blogQuery.js";
 
 const RecommndedBlogs = ({ blogId }) => {
   const { data, isLoading, error } = UseBlogRecommendations(blogId);
-  
-  
 
- 
+  if (isLoading) return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 16, marginTop: 32 }}>
+      {[1,2].map(i => (
+        <div key={i} style={{ height: 220, background: "rgba(255,255,255,0.04)", borderRadius: 14, animation: "pulse 1.5s ease-in-out infinite" }} />
+      ))}
+    </div>
+  );
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-  if (!data || data.length === 0) return <p>No recommended blogs found.</p>;
+  if (error) return <p style={{ color: "#f87171", textAlign: "center" }}>Could not load recommendations.</p>;
+  if (!data?.length) return <p style={{ color: "#6b6b80", textAlign: "center" }}>No recommended articles found.</p>;
 
   return (
-    <div>
-      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 my-10">
-        {data.map((blog, index) => (
-          <Link key={index} to={`/blogs/${blog._id}`}>
-            <div className=" rounded-xl shadow-md p-4 hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-              <img
-                src={blog.image || img1}
-                alt={blog.title}
-                 loading="lazy"
-                className="w-full lg:h-56 h-46 lg:object-cover rounded-xl"
-              />
+    <div style={{ marginTop: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        <span style={{ width: 20, height: 2, background: "#f97316", borderRadius: 2 }} />
+        <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#e8e6e1", margin: 0 }}>
+          Recommended Articles
+        </h2>
+      </div>
 
-              <div className="p-4 space-y-3">
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {blog.tags?.slice(0, 3).map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="text-xs bg-blue-100 text-blue-600 font-medium px-3 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
+        {data.map(blog => (
+          <Link key={blog._id} to={`/blogs/${blog._id}`} style={{ textDecoration: "none" }} className="group">
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden", transition: "border-color 0.2s, transform 0.2s" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(249,115,22,0.3)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.transform = "translateY(0)"; }}
+            >
+              <div style={{ overflow: "hidden", height: 130 }}>
+                <img src={blog.image} alt={blog.title} loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.75)", transition: "transform 0.5s" }}
+                  onMouseEnter={e => e.target.style.transform = "scale(1.05)"}
+                  onMouseLeave={e => e.target.style.transform = "scale(1)"}
+                />
+              </div>
+              <div style={{ padding: "14px 16px" }}>
+                <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                  {blog.tags?.slice(0,2).map((tag, i) => (
+                    <span key={i} style={{ fontSize: "0.62rem", padding: "2px 8px", borderRadius: 100, background: "rgba(249,115,22,0.1)", color: "#f97316", border: "1px solid rgba(249,115,22,0.2)" }}>#{tag}</span>
                   ))}
                 </div>
-
-                {/* Title */}
-                <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 line-clamp-2">
+                <h3 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 600, fontSize: "0.88rem", color: "#e8e6e1", lineHeight: 1.4, margin: "0 0 8px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                   {blog.title}
-                </h2>
-
-                {/* Author & Meta */}
-                <div className="text-sm text-gray-500 flex flex-wrap gap-4 items-center">
-                  <p>{blog.author?.name || "Unknown Author"}</p>
-                  <p>{new Date(blog.createdAt).toLocaleDateString()}</p>
-                  <p>💬 {blog.comments?.length ?? 0}</p>
-                </div>
-
-                {/* Content Preview */}
-                <p className="text-sm text-gray-700 line-clamp-3">
-                  {blog.content.replace(/<[^>]+>/g, "").slice(0, 80)}...
-                </p>
-
-                {/* Read More Button (Optional) */}
-                <div>
-                  <button className="btn btn-outline border-blue-200  text-blue-500 rounded-3xl hover:text-white hover:bg-blue-600">
-                    Read More
-                  </button>
+                </h3>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", color: "#6b6b80" }}>
+                  <span>{blog.author?.name}</span>
+                  <span>💬 {blog.comments?.length ?? 0}</span>
                 </div>
               </div>
             </div>

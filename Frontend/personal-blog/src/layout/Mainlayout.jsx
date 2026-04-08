@@ -7,11 +7,11 @@ import Navvber from "../components/Shared/Navvber.jsx";
 const Mainlayout = () => {
   return (
     <div className=" ">
-      {/* <Navber></Navber> */}
-      <Navvber></Navvber>
+      <Navber></Navber>
+      {/* <Navvber></Navvber> */}
      
 
-      <main className="   bg-[#f0f5fa] ">
+      <main className="   bg-black ">
         <Outlet />
           <ScrollRestoration />
       </main>

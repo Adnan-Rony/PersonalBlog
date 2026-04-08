@@ -10,23 +10,29 @@ const ProfileModel = ({ closeModal, userId, initialData }) => {
   const [profilePicture, setProfilePicture] = useState(initialData?.profilePicture || "");
   const [image, setImage] = useState("");
 
-  const handleSubmit = async () => {
-    if (!name || !profilePicture) {
-      toast.error("Name and profile picture are required.");
-      return;
-    }
+ const handleSubmit = async () => {
+  const updatedData = {};
 
-    const updatedData = { name, email, bio, profilePicture };
+  if (name !== initialData?.name) updatedData.name = name;
+  if (email !== initialData?.email) updatedData.email = email;
+  if (bio !== initialData?.bio) updatedData.bio = bio;
+  if (profilePicture !== initialData?.profilePicture) updatedData.profilePicture = profilePicture;
 
-    try {
-      const response = await userprofileupdate(userId, updatedData);
-      toast.success(response.data.message || "Profile updated");
-      closeModal();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update profile");
-    }
-  };
+  if (Object.keys(updatedData).length === 0) {
+    toast("No changes made.");
+    return;
+  }
+
+  try {
+    const response = await userprofileupdate(userId, updatedData);
+    toast.success(response.data.message || "Profile updated");
+    closeModal();
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to update profile");
+  }
+};
+
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -43,7 +49,7 @@ const ProfileModel = ({ closeModal, userId, initialData }) => {
       );
       const imageUrl = res.data.secure_url;
       setImage(imageUrl);
-      setProfilePicture(imageUrl); // ✅ Important: set for saving
+      setProfilePicture(imageUrl); // 
       toast.success("Image uploaded!");
     } catch (error) {
       console.error("Image upload error:", error);
@@ -139,7 +145,7 @@ const ProfileModel = ({ closeModal, userId, initialData }) => {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!name || !profilePicture}
+           
             className="px-4 py-2 bg-black text-white rounded-full hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save

@@ -1,82 +1,56 @@
-
 import bcrypt from 'bcryptjs';
 import UserModel from '../models/User.model.js';
 import { validatePassword } from '../utils/validatePassword.js';
-import { generateToken } from './../utils/generateToken.js';
+import { generateToken } from '../utils/generateToken.js';
 
 
-
-
-
-// Register User
+// ─── Register User ────────────────────────────────────────────────────────────
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
-  try {
-    let user = await UserModel.findOne({ email });
+  // BUG FIX 4: validate inputs before any DB call
+  if (!name || name.trim() === '') {
+    return res.status(400).json({ success: false, message: 'Name is required' });
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: 'A valid email is required' });
+  }
 
-    // 👇 If user already exists
+  try {
+    let user = await UserModel.findOne({ email: email.toLowerCase() });
+
     if (user) {
-      // If it's an email/password login, throw error
       if (password) {
         return res.status(400).json({ success: false, message: 'User already exists' });
       }
-
-      // If it's a Google login (no password), just "log them in"
+      // Google sign-in for existing user
       const token = generateToken(user);
-
-res.cookie('token', token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 5 * 24 * 60 * 60 * 1000,
-});
-
+      setTokenCookie(res, token);
       return res.status(200).json({
         success: true,
         message: 'Google sign-in successful',
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          createdAt: user.createdAt,
-        },
+        user: sanitizeUser(user),
       });
     }
 
-    // 👇 If user doesn't exist
     if (password) {
       const passwordError = validatePassword(password);
       if (passwordError) {
         return res.status(400).json({ success: false, message: passwordError });
       }
-
       const hashedPassword = await bcrypt.hash(password, 10);
-      user = await UserModel.create({ name, email, password: hashedPassword });
+      user = await UserModel.create({ name: name.trim(), email: email.toLowerCase(), password: hashedPassword });
     } else {
-      user = await UserModel.create({ name, email, password: 'google-oauth' });
+      user = await UserModel.create({ name: name.trim(), email: email.toLowerCase(), password: 'google-oauth' });
     }
 
     const token = generateToken(user);
-
- res.cookie('token', token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 5 * 24 * 60 * 60 * 1000,
-});
+    setTokenCookie(res, token);
 
     return res.status(201).json({
       success: true,
-      message: password ? 'User registered with email/password' : 'User registered successfully (Google Sign-In)',
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      message: password ? 'User registered successfully' : 'Google sign-in successful',
+      user: sanitizeUser(user),
     });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Registration failed', error: err.message });
@@ -84,37 +58,28 @@ sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 };
 
 
-
+// ─── Google Login / Register ──────────────────────────────────────────────────
 export const loginOrRegisterGoogleUser = async (req, res) => {
   const { name, email } = req.body;
 
-  try {
-    let user = await UserModel.findOne({ email });
+  // BUG FIX 4: validate google payload
+  if (!name || !email) {
+    return res.status(400).json({ success: false, message: 'Name and email are required' });
+  }
 
+  try {
+    let user = await UserModel.findOne({ email: email.toLowerCase() });
     if (!user) {
-      // New user — register them
-      user = await UserModel.create({ name, email, password: 'google-oauth' });
+      user = await UserModel.create({ name: name.trim(), email: email.toLowerCase(), password: 'google-oauth' });
     }
 
     const token = generateToken(user);
-
-res.cookie('token', token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 5 * 24 * 60 * 60 * 1000,
-});
+    setTokenCookie(res, token);
 
     return res.status(200).json({
       success: true,
       message: 'Google sign-in successful',
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      user: sanitizeUser(user),
     });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Google login failed', error: err.message });
@@ -122,44 +87,29 @@ sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 };
 
 
-
-
-// Login User
- // Adjust path as needed
-
+// ─── Login User ───────────────────────────────────────────────────────────────
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  // BUG FIX 4: validate before DB call
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
+  }
+
   try {
-    const user = await UserModel.findOne({ email });
-    if (!user)
-      return res.status(401).json({ success: false, message: 'User not found' });
+    const user = await UserModel.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(401).json({ success: false, message: 'User not found' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const token = generateToken(user);
+    setTokenCookie(res, token);
 
-  res.cookie('token', token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 5 * 24 * 60 * 60 * 1000,
-});
-
-    console.log("✅ Logged in user:", user.email);
     res.status(200).json({
-      success: true, // Added for frontend compatibility
+      success: true,
       message: 'Login successful',
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
-      token
+      user: sanitizeUser(user),
     });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Login failed', error: err.message });
@@ -167,43 +117,42 @@ sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 };
 
 
-//get all users
+// ─── Get all users (admin only) ───────────────────────────────────────────────
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await UserModel.find({}).select('-password')
-     .populate("followers", "name email profilePicture") 
-      .populate("following", "name email profilePicture"); 
+    const users = await UserModel.find({})
+      .select('-password')
+      .populate('followers', 'name email profilePicture')
+      .populate('following', 'name email profilePicture');
     res.status(200).json(users);
   } catch (err) {
-    console.error("Error fetching users:", err);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-}
+};
 
 
-
+// ─── Get current logged-in user ───────────────────────────────────────────────
 export const getCurrentUser = async (req, res) => {
   try {
-    const user = await UserModel.findById(req.user.id).select('-password')
-      .populate("followers", "name email profilePicture") 
-      .populate("following", "name email profilePicture");
+    const user = await UserModel.findById(req.user.id)
+      .select('-password')
+      .populate('followers', 'name email profilePicture')
+      .populate('following', 'name email profilePicture');
 
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
     res.status(200).json({
       success: true,
       user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        bio:user.bio,
-        followers:user.followers,
-        following:user.following,
-        profilePicture:user.profilePicture,
-        createdAt: user.createdAt,
+        _id:            user._id,
+        name:           user.name,
+        email:          user.email,
+        role:           user.role,
+        bio:            user.bio,
+        followers:      user.followers,
+        following:      user.following,
+        profilePicture: user.profilePicture,
+        createdAt:      user.createdAt,
       },
     });
   } catch (err) {
@@ -212,164 +161,158 @@ export const getCurrentUser = async (req, res) => {
 };
 
 
+// ─── Logout ───────────────────────────────────────────────────────────────────
 export const logoutUser = (req, res) => {
-   try {
+  try {
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Logged out successfully.',
-    });
+    return res.status(200).json({ success: true, message: 'Logged out successfully.' });
   } catch (error) {
-    console.error('Logout error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error. Please try again.',
-    });
+    return res.status(500).json({ success: false, message: 'Server error. Please try again.' });
   }
 };
 
 
-
-// Promote to Admin
+// ─── Promote user to admin ────────────────────────────────────────────────────
 export const makeAdmin = async (req, res) => {
-
-  const { id } = req.params;
-
-  console.log('Current user:', req.user);  
-
-
-  // Only allow if current user is an admin
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Access denied: Admins only' });
   }
-
   try {
-    const user = await UserModel.findByIdAndUpdate(
-      id,
-      { role: 'admin' },
-      { new: true }
-    );
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    const user = await UserModel.findByIdAndUpdate(req.params.id, { role: 'admin' }, { new: true });
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json({ message: 'User promoted to admin', user });
   } catch (err) {
     res.status(500).json({ message: 'Failed to update role', error: err.message });
   }
 };
- 
-//  Update user profile
+
+
+// ─── Update user profile ──────────────────────────────────────────────────────
 export const updateUserProfile = async (req, res) => {
-  const {name, email, bio, profilePicture } = req.body;
+  const { name, email, bio, profilePicture } = req.body;
+
+  // BUG FIX 4: validate email format if provided
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+  if (name !== undefined && name.trim() === '') {
+    return res.status(400).json({ message: 'Name cannot be empty' });
+  }
 
   try {
-    const user = await UserModel.findById(req.user.id); // JWT will give req.user.id
+    const user = await UserModel.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Update only provided fields
-    if (name) user.name = name;
-    if (email) user.email = email;
-    if (bio) user.bio = bio;
+    if (name)           user.name           = name.trim();
+    if (email)          user.email          = email.toLowerCase();
+    if (bio !== undefined) user.bio         = bio;
     if (profilePicture) user.profilePicture = profilePicture;
 
     await user.save();
-
-    res.status(200).json({ message: "Profile updated successfully", user });
+    res.status(200).json({ message: 'Profile updated successfully', user });
   } catch (err) {
-    res.status(500).json({ message: "Error updating profile", error: err.message });
+    res.status(500).json({ message: 'Error updating profile', error: err.message });
   }
 };
 
 
-
-// FOLLOW USER
+// ─── Follow / Unfollow ────────────────────────────────────────────────────────
 export const followUser = async (req, res) => {
   const currentUserId = req.user.id;
-  const targetUserId = req.params.id;
+  const targetUserId  = req.params.id;
 
   if (currentUserId === targetUserId) {
     return res.status(400).json({ message: "You can't follow yourself" });
   }
 
-  const currentUser = await UserModel.findById(currentUserId);
-  const targetUser = await UserModel.findById(targetUserId);
+  try {
+    const currentUser = await UserModel.findById(currentUserId);
+    const targetUser  = await UserModel.findById(targetUserId);
 
-  if (!targetUser) return res.status(404).json({ message: "User not found" });
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
+    if (currentUser.following.includes(targetUserId)) {
+      return res.status(400).json({ message: 'Already following' });
+    }
 
-  if (currentUser.following.includes(targetUserId)) {
-    return res.status(400).json({ message: "Already following" });
+    currentUser.following.push(targetUserId);
+    targetUser.followers.push(currentUserId);
+
+    await currentUser.save();
+    await targetUser.save();
+
+    res.status(200).json({ message: 'Followed successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
-
-  currentUser.following.push(targetUserId);
-  targetUser.followers.push(currentUserId);
-
-  await currentUser.save();
-  await targetUser.save();
-
-  res.status(200).json({ message: "Followed successfully" });
 };
 
-// UNFOLLOW USER
 export const unfollowUser = async (req, res) => {
   const currentUserId = req.user.id;
-  const targetUserId = req.params.id;
+  const targetUserId  = req.params.id;
 
-  const currentUser = await UserModel.findById(currentUserId);
-  const targetUser = await UserModel.findById(targetUserId);
+  try {
+    const currentUser = await UserModel.findById(currentUserId);
+    const targetUser  = await UserModel.findById(targetUserId);
 
-  if (!targetUser) return res.status(404).json({ message: "User not found" });
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
 
-  currentUser.following = currentUser.following.filter(id => id.toString() !== targetUserId);
-  targetUser.followers = targetUser.followers.filter(id => id.toString() !== currentUserId);
+    currentUser.following = currentUser.following.filter(id => id.toString() !== targetUserId);
+    targetUser.followers  = targetUser.followers.filter(id => id.toString() !== currentUserId);
 
-  await currentUser.save();
-  await targetUser.save();
+    await currentUser.save();
+    await targetUser.save();
 
-  res.status(200).json({ message: "Unfollowed successfully" });
+    res.status(200).json({ message: 'Unfollowed successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
 };
 
 
-
-// Get a user's followers
+// ─── Get followers / following ────────────────────────────────────────────────
 export const getUserFollowers = async (req, res) => {
-  const userId = req.params.id;
-
   try {
-    const user = await UserModel.findById(userId)
-      .populate("followers", "name email profilePicture") // You can select any fields
-      .select("followers");
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
+    const user = await UserModel.findById(req.params.id)
+      .populate('followers', 'name email profilePicture')
+      .select('followers');
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json({ followers: user.followers });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 
 export const getUserFollowing = async (req, res) => {
-  const userId = req.params.id;
-
   try {
-    const user = await UserModel.findById(userId).select("following");
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const followingIds = user.following.map(id => id.toString());
-
-    res.status(200).json({ following: followingIds });
+    const user = await UserModel.findById(req.params.id).select('following');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json({ following: user.following.map(id => id.toString()) });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+
+// ─── Helpers (private, not exported) ─────────────────────────────────────────
+function setTokenCookie(res, token) {
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge:   5 * 24 * 60 * 60 * 1000, // 5 days
+  });
+}
+
+function sanitizeUser(user) {
+  return {
+    _id:       user._id,
+    name:      user.name,
+    email:     user.email,
+    role:      user.role,
+    createdAt: user.createdAt,
+  };
+}
